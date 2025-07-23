@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,9 @@ import { getGrade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { getGrade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
 import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import { getGrade12ITQuestions } from '@/data/grade12ITQuestions';
+import { getGrade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
+import { getGrade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
+import { getGrade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
 import QuestionExplanation from '@/components/QuestionExplanation';
 
 interface Question {
@@ -325,23 +329,140 @@ const QuizPage = () => {
         setIsLoading(false);
         return [];
       }
+
+      if (decodedSubject === 'History' && grade === '12') {
+        console.log('Loading History questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
+        
+        const difficultyLevel = selectedDifficulty as 'Easy' | 'Medium' | 'Hard';
+        const historyQuestions = getGrade12HistoryQuestions(decodedChapter, difficultyLevel, 10);
+        
+        console.log('Loaded History questions:', historyQuestions.length);
+        
+        if (historyQuestions.length === 0) {
+          const easyQuestions = getGrade12HistoryQuestions(decodedChapter, 'Easy', 3);
+          const mediumQuestions = getGrade12HistoryQuestions(decodedChapter, 'Medium', 3);
+          const hardQuestions = getGrade12HistoryQuestions(decodedChapter, 'Hard', 4);
+          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+          
+          const formattedQuestions = allQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        } else {
+          const formattedQuestions = historyQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          console.log('Formatted History questions with explanations:', formattedQuestions);
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        }
+        
+        setIsLoading(false);
+        return [];
+      }
+
+      if ((decodedSubject === 'Civic Education' || decodedSubject === 'Civics') && grade === '12') {
+        console.log('Loading Civic Education questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
+        
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const civicsQuestions = getGrade12CivicsQuestions(decodedChapter, difficultyLevel, 10);
+        
+        console.log('Loaded Civic Education questions:', civicsQuestions.length);
+        
+        if (civicsQuestions.length === 0) {
+          const easyQuestions = getGrade12CivicsQuestions(decodedChapter, 'easy', 3);
+          const mediumQuestions = getGrade12CivicsQuestions(decodedChapter, 'medium', 3);
+          const hardQuestions = getGrade12CivicsQuestions(decodedChapter, 'hard', 4);
+          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+          
+          const formattedQuestions = allQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        } else {
+          const formattedQuestions = civicsQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          console.log('Formatted Civic Education questions with explanations:', formattedQuestions);
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        }
+        
+        setIsLoading(false);
+        return [];
+      }
+
+      if (decodedSubject === 'English' && grade === '12') {
+        console.log('Loading English questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
+        
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const englishQuestions = getGrade12EnglishQuestions(decodedChapter, difficultyLevel, 10);
+        
+        console.log('Loaded English questions:', englishQuestions.length);
+        
+        if (englishQuestions.length === 0) {
+          const easyQuestions = getGrade12EnglishQuestions(decodedChapter, 'easy', 3);
+          const mediumQuestions = getGrade12EnglishQuestions(decodedChapter, 'medium', 3);
+          const hardQuestions = getGrade12EnglishQuestions(decodedChapter, 'hard', 4);
+          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+          
+          const formattedQuestions = allQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        } else {
+          const formattedQuestions = englishQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          console.log('Formatted English questions with explanations:', formattedQuestions);
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        }
+        
+        setIsLoading(false);
+        return [];
+      }
       
-      // Fallback for unsupported subjects - show error instead of placeholder questions
+      // If subject is not supported, show error
       console.error(`Subject "${decodedSubject}" is not supported for Grade ${grade}`);
+      setIsLoading(false);
       return [];
     };
     
-    if (decodedSubject === 'Biology' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Chemistry' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Physics' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Agriculture' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Geography' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Information Technology' && grade === '12') {
+    if (['Biology', 'Chemistry', 'Physics', 'Agriculture', 'Geography', 'Information Technology', 'History', 'Civic Education', 'Civics', 'English'].includes(decodedSubject) && grade === '12') {
       initializeQuestions();
     } else {
       const quizQuestions = initializeQuestions();
@@ -582,21 +703,65 @@ const QuizPage = () => {
         setIsLoading(false);
         return [];
       }
+
+      if (decodedSubject === 'History' && grade === '12') {
+        const difficultyLevel = selectedDifficulty as 'Easy' | 'Medium' | 'Hard';
+        const historyQuestions = getGrade12HistoryQuestions(decodedChapter, difficultyLevel, 10);
+        
+        const formattedQuestions = historyQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
+        setIsLoading(false);
+        return [];
+      }
+
+      if ((decodedSubject === 'Civic Education' || decodedSubject === 'Civics') && grade === '12') {
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const civicsQuestions = getGrade12CivicsQuestions(decodedChapter, difficultyLevel, 10);
+        
+        const formattedQuestions = civicsQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
+        setIsLoading(false);
+        return [];
+      }
+
+      if (decodedSubject === 'English' && grade === '12') {
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const englishQuestions = getGrade12EnglishQuestions(decodedChapter, difficultyLevel, 10);
+        
+        const formattedQuestions = englishQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
+        setIsLoading(false);
+        return [];
+      }
       
       return [];
     };
     
-    if (decodedSubject === 'Biology' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Chemistry' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Physics' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Agriculture' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Geography' && grade === '12') {
-      initializeQuestions();
-    } else if (decodedSubject === 'Information Technology' && grade === '12') {
+    if (['Biology', 'Chemistry', 'Physics', 'Agriculture', 'Geography', 'Information Technology', 'History', 'Civic Education', 'Civics', 'English'].includes(decodedSubject) && grade === '12') {
       initializeQuestions();
     } else {
       const newQuestions = initializeQuestions();
