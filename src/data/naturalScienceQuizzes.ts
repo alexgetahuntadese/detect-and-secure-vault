@@ -3,6 +3,7 @@ import { grade12ChemistryQuestions, getGrade12ChemistryQuestions } from './grade
 import { grade12EnglishQuestions } from './grade12EnglishQuestions';
 import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade12GeographyQuestions';
 import { grade12HistoryQuestions, getGrade12HistoryQuestions } from './grade12HistoryQuestions';
+import { grade12CivicsQuestions, getGrade12CivicsQuestions } from './grade12CivicsQuestions';
 
 export interface Question {
   id: string;
@@ -379,6 +380,23 @@ export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty
     }
     
     console.log('Available Grade 12 History units:', Object.keys(grade12HistoryQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Civic Education questions
+  if (subject.toLowerCase() === 'civic education' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Civic Education for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12CivicsQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Civic Education questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    console.log('Available Grade 12 Civic Education units:', Object.keys(grade12CivicsQuestions));
     console.log('Requested unit:', chapter);
     return [];
   }

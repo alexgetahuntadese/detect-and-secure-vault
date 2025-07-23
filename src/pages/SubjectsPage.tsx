@@ -101,10 +101,10 @@ const SubjectsPage = () => {
     },
     {
       name: 'Civic Education',
-      description: 'Democracy, rights, responsibilities, and governance',
-      chapters: 6,
-      estimatedTime: '20 hours',
-      difficulty: 'Beginner',
+      description: 'Democracy, rights, responsibilities, justice, and ethical citizenship',
+      chapters: 11,
+      estimatedTime: '35 hours',
+      difficulty: 'Intermediate',
       icon: subjectIcons['Civic Education'],
     },
     {

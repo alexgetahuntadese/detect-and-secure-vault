@@ -12,6 +12,7 @@ import { grade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
 import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
 import { grade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
+import { grade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
 
 const ChaptersPage = () => {
   const navigate = useNavigate();
@@ -220,6 +221,31 @@ const ChaptersPage = () => {
         };
       });
     }
+
+    if (decodedSubject === 'Civic Education' && grade === '12') {
+      return Object.keys(grade12CivicsQuestions).map((unitName, index) => {
+        const questions = grade12CivicsQuestions[unitName];
+        const easyQuestions = questions.filter(q => q.difficulty === 'Easy').length;
+        const mediumQuestions = questions.filter(q => q.difficulty === 'Medium').length;
+        const hardQuestions = questions.filter(q => q.difficulty === 'Hard').length;
+        
+        return {
+          id: index + 1,
+          title: unitName,
+          description: getCivicsUnitDescription(unitName),
+          duration: getDurationEstimate(questions.length),
+          difficulty: getDominantDifficulty(easyQuestions, mediumQuestions, hardQuestions),
+          progress: Math.floor(Math.random() * 101),
+          isCompleted: Math.random() > 0.7,
+          questionsCount: questions.length,
+          difficultyBreakdown: {
+            easy: easyQuestions,
+            medium: mediumQuestions,
+            hard: hardQuestions
+          }
+        };
+      });
+    }
     
     return [
       {
@@ -391,6 +417,23 @@ const ChaptersPage = () => {
       "Unit 9: Indigenous Knowledge Systems and Heritages of Ethiopia": "Explore Ethiopian traditional knowledge, cultural heritage, and indigenous practices"
     };
     return descriptions[unitName] || "Comprehensive study of historical developments and their contemporary significance";
+  };
+
+  const getCivicsUnitDescription = (unitName: string) => {
+    const descriptions: { [key: string]: string } = {
+      "Unit 1: Building a Democratic System": "Explore democracy fundamentals, authority vs power, constitutional rights, and Ethiopian foreign relations",
+      "Unit 2: Rule of Law": "Study constitutional supremacy, conflict management, anti-corruption measures, and good governance principles",
+      "Unit 3: Equality": "Examine struggles against oppression, affirmative action policies, and unity in diversity concepts",
+      "Unit 4: Justice": "Analyze equity principles, judicial systems, crime prevention, and taxation fairness",
+      "Unit 5: Patriotism": "Learn qualities of patriots, Ethiopian historical heritage, and global citizenship responsibilities", 
+      "Unit 6: Responsibility": "Understand personal and social duties, HIV/AIDS awareness, and international cooperation",
+      "Unit 7: Industriousness": "Study work ethics, labor perspectives, and productivity in global contexts",
+      "Unit 8: Self-Reliance": "Develop independence skills, moral decision-making, and personal autonomy",
+      "Unit 9: Saving": "Master economic principles, saving methods, and money and capital management",
+      "Unit 10: Active Community Participation": "Engage in civic activities, leadership development, and community involvement",
+      "Unit 11: The Pursuit of Wisdom": "Cultivate knowledge, reading habits, and information literacy skills"
+    };
+    return descriptions[unitName] || "Comprehensive study of civic and ethical education principles";
   };
 
   const getDurationEstimate = (questionCount: number) => {
