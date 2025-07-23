@@ -10,6 +10,7 @@ import { grade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
 import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { grade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
 import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
+import { grade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 
 const ChaptersPage = () => {
   const navigate = useNavigate();
@@ -168,6 +169,31 @@ const ChaptersPage = () => {
         };
       });
     }
+
+    if (decodedSubject === 'Geography' && grade === '12') {
+      return Object.keys(grade12GeographyQuestions).map((unitName, index) => {
+        const questions = grade12GeographyQuestions[unitName];
+        const easyQuestions = questions.filter(q => q.difficulty === 'Easy').length;
+        const mediumQuestions = questions.filter(q => q.difficulty === 'Medium').length;
+        const hardQuestions = questions.filter(q => q.difficulty === 'Hard').length;
+        
+        return {
+          id: index + 1,
+          title: unitName,
+          description: getGeographyUnitDescription(unitName),
+          duration: getDurationEstimate(questions.length),
+          difficulty: getDominantDifficulty(easyQuestions, mediumQuestions, hardQuestions),
+          progress: Math.floor(Math.random() * 101),
+          isCompleted: Math.random() > 0.7,
+          questionsCount: questions.length,
+          difficultyBreakdown: {
+            easy: easyQuestions,
+            medium: mediumQuestions,
+            hard: hardQuestions
+          }
+        };
+      });
+    }
     
     return [
       {
@@ -310,6 +336,20 @@ const ChaptersPage = () => {
       "Unit 6: Sustainable Agriculture": "Learn sustainable farming practices, environmental conservation, and climate-smart agriculture"
     };
     return descriptions[unitName] || "Comprehensive study of agricultural principles and sustainable farming practices";
+  };
+
+  const getGeographyUnitDescription = (unitName: string) => {
+    const descriptions: { [key: string]: string } = {
+      "Unit 1: Major Geological Processes Associated with Plate Tectonics": "Study plate tectonics, earthquakes, volcanoes, and geological processes shaping Earth's surface",
+      "Unit 2: Climate Change": "Explore global climate change, greenhouse effect, impacts, and adaptation strategies",
+      "Unit 3: Population Policies Programs and the Environment": "Examine population dynamics, demographic policies, and their environmental implications",
+      "Unit 4: Solutions to Environmental and Sustainability Problems": "Learn about renewable energy, conservation, sustainable development, and green technologies",
+      "Unit 5: Challenges of Economic Development": "Investigate economic development challenges, poverty, inequality, and environmental trade-offs",
+      "Unit 6: Solutions to Environmental and Sustainability Problems Solutions": "Discover conservation strategies, community-based solutions, and ecosystem management",
+      "Unit 7: Contemporary Global Geographic Issues and Public Concerns": "Analyze globalization, urbanization, food security, and contemporary geographic challenges",
+      "Unit 8: Geographical Enquiry and Map Making": "Master GIS, remote sensing, cartography, and geographic research methods"
+    };
+    return descriptions[unitName] || "Comprehensive study of geographic principles and contemporary issues";
   };
 
   const getDurationEstimate = (questionCount: number) => {

@@ -1,6 +1,7 @@
 import { grade12BiologyQuestions, getGrade12BiologyQuestions } from './grade12BiologyQuestions';
 import { grade12ChemistryQuestions, getGrade12ChemistryQuestions } from './grade12ChemistryQuestions';
 import { grade12EnglishQuestions } from './grade12EnglishQuestions';
+import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade12GeographyQuestions';
 
 export interface Question {
   id: string;
@@ -334,6 +335,23 @@ export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty
     }
     
     console.log('Available Grade 12 English units:', Object.keys(grade12EnglishQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Geography questions
+  if (subject.toLowerCase() === 'geography' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Geography for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12GeographyQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Geography questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    console.log('Available Grade 12 Geography units:', Object.keys(grade12GeographyQuestions));
     console.log('Requested unit:', chapter);
     return [];
   }
