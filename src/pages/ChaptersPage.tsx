@@ -13,6 +13,7 @@ import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions'
 import { grade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 import { grade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
+import { grade12ITQuestions } from '@/data/grade12ITQuestions';
 
 const ChaptersPage = () => {
   const navigate = useNavigate();
@@ -246,6 +247,31 @@ const ChaptersPage = () => {
         };
       });
     }
+
+    if (decodedSubject === 'Information Technology' && grade === '12') {
+      return Object.keys(grade12ITQuestions).map((unitName, index) => {
+        const questions = grade12ITQuestions[unitName];
+        const easyQuestions = questions.filter(q => q.difficulty === 'Easy').length;
+        const mediumQuestions = questions.filter(q => q.difficulty === 'Medium').length;
+        const hardQuestions = questions.filter(q => q.difficulty === 'Hard').length;
+        
+        return {
+          id: index + 1,
+          title: unitName,
+          description: getITUnitDescription(unitName),
+          duration: getDurationEstimate(questions.length),
+          difficulty: getDominantDifficulty(easyQuestions, mediumQuestions, hardQuestions),
+          progress: Math.floor(Math.random() * 101),
+          isCompleted: Math.random() > 0.7,
+          questionsCount: questions.length,
+          difficultyBreakdown: {
+            easy: easyQuestions,
+            medium: mediumQuestions,
+            hard: hardQuestions
+          }
+        };
+      });
+    }
     
     return [
       {
@@ -434,6 +460,18 @@ const ChaptersPage = () => {
       "Unit 11: The Pursuit of Wisdom": "Cultivate knowledge, reading habits, and information literacy skills"
     };
     return descriptions[unitName] || "Comprehensive study of civic and ethical education principles";
+  };
+
+  const getITUnitDescription = (unitName: string) => {
+    const descriptions: { [key: string]: string } = {
+      "Unit 1: Information Systems and Their Applications": "Explore E-learning, E-government, E-banking, E-libraries, E-commerce, and system analysis methodologies",
+      "Unit 2: Emerging Technologies": "Study cloud computing, big data analytics, AI fundamentals, digital identity, and ethical implications of technology",
+      "Unit 3: Database Management System": "Master data modeling, relational databases, SQL programming, and database design principles",
+      "Unit 4: Web Authoring": "Learn HTML/CSS coding, website planning, design principles, and web accessibility standards",
+      "Unit 5: Maintenance and Troubleshooting": "Understand hardware/software diagnostics, system maintenance, and preventive care strategies",
+      "Unit 6: Fundamentals of Programming": "Develop programming logic, pseudocode writing, flowchart design, and basic syntax skills"
+    };
+    return descriptions[unitName] || "Comprehensive study of information technology concepts and practical applications";
   };
 
   const getDurationEstimate = (questionCount: number) => {

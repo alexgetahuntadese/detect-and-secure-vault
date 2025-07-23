@@ -17,7 +17,8 @@ import {
   Users,
   Briefcase,
   Wheat,
-  ScrollText
+  ScrollText,
+  Monitor
 } from 'lucide-react';
 
 const SubjectsPage = () => {
@@ -40,6 +41,7 @@ const SubjectsPage = () => {
     'Economics': Briefcase,
     'General Science': Atom,
     'Agriculture': Wheat,
+    'Information Technology': Monitor,
   };
 
   const subjects = [
@@ -114,6 +116,14 @@ const SubjectsPage = () => {
       estimatedTime: '40 hours',
       difficulty: 'Intermediate',
       icon: subjectIcons.Agriculture,
+    },
+    {
+      name: 'Information Technology',
+      description: 'Computer systems, programming, databases, web development, and emerging technologies',
+      chapters: 6,
+      estimatedTime: '42 hours',
+      difficulty: 'Intermediate',
+      icon: subjectIcons['Information Technology'],
     },
   ];
 

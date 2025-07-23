@@ -4,6 +4,7 @@ import { grade12EnglishQuestions } from './grade12EnglishQuestions';
 import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade12GeographyQuestions';
 import { grade12HistoryQuestions, getGrade12HistoryQuestions } from './grade12HistoryQuestions';
 import { grade12CivicsQuestions, getGrade12CivicsQuestions } from './grade12CivicsQuestions';
+import { grade12ITQuestions, getGrade12ITQuestions } from './grade12ITQuestions';
 
 export interface Question {
   id: string;
@@ -397,6 +398,32 @@ export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty
     }
     
     console.log('Available Grade 12 Civic Education units:', Object.keys(grade12CivicsQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Information Technology questions
+  if (subject.toLowerCase() === 'information technology' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Information Technology for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12ITQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Information Technology questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    console.log('Available Grade 12 Information Technology units:', Object.keys(grade12ITQuestions));
     console.log('Requested unit:', chapter);
     return [];
   }
