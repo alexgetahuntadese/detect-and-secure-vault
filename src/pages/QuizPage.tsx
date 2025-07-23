@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +13,7 @@ import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import { getGrade12ITQuestions } from '@/data/grade12ITQuestions';
 import { getGrade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 import { getGrade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
-import { getGrade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
+import { grade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
 import QuestionExplanation from '@/components/QuestionExplanation';
 
 interface Question {
@@ -415,43 +414,35 @@ const QuizPage = () => {
       }
 
       if (decodedSubject === 'English' && grade === '12') {
-        console.log('Loading English questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
-        
         const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
-        const englishQuestions = getGrade12EnglishQuestions(decodedChapter, difficultyLevel, 10);
+        const chapterQuestions = grade12EnglishQuestions[decodedChapter];
         
-        console.log('Loaded English questions:', englishQuestions.length);
-        
-        if (englishQuestions.length === 0) {
-          const easyQuestions = getGrade12EnglishQuestions(decodedChapter, 'easy', 3);
-          const mediumQuestions = getGrade12EnglishQuestions(decodedChapter, 'medium', 3);
-          const hardQuestions = getGrade12EnglishQuestions(decodedChapter, 'hard', 4);
-          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
-          
-          const formattedQuestions = allQuestions.map((q, index) => ({
-            id: index + 1,
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.options.indexOf(q.correct),
-            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
-          }));
-          
-          setQuestions(formattedQuestions);
-          setAnswers(new Array(formattedQuestions.length).fill(null));
-        } else {
-          const formattedQuestions = englishQuestions.map((q, index) => ({
-            id: index + 1,
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.options.indexOf(q.correct),
-            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
-          }));
-          
-          console.log('Formatted English questions with explanations:', formattedQuestions);
-          setQuestions(formattedQuestions);
-          setAnswers(new Array(formattedQuestions.length).fill(null));
+        if (!chapterQuestions) {
+          setQuestions([]);
+          setAnswers([]);
+          setIsLoading(false);
+          return [];
         }
         
+        const filteredQuestions = chapterQuestions.filter(q => q.difficulty === difficultyLevel);
+        
+        let questionsToUse = filteredQuestions;
+        if (filteredQuestions.length === 0) {
+          questionsToUse = chapterQuestions;
+        }
+        
+        const shuffled = [...questionsToUse].sort(() => Math.random() - 0.5);
+        const questionsToTake = Math.min(10, shuffled.length);
+        const formattedQuestions = shuffled.slice(0, questionsToTake).map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
         setIsLoading(false);
         return [];
       }
@@ -742,9 +733,26 @@ const QuizPage = () => {
 
       if (decodedSubject === 'English' && grade === '12') {
         const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
-        const englishQuestions = getGrade12EnglishQuestions(decodedChapter, difficultyLevel, 10);
+        const chapterQuestions = grade12EnglishQuestions[decodedChapter];
         
-        const formattedQuestions = englishQuestions.map((q, index) => ({
+        if (!chapterQuestions) {
+          console.log('No English questions found for chapter:', decodedChapter);
+          setQuestions([]);
+          setAnswers([]);
+          setIsLoading(false);
+          return [];
+        }
+        
+        const filteredQuestions = chapterQuestions.filter(q => q.difficulty === difficultyLevel);
+        
+        let questionsToUse = filteredQuestions;
+        if (filteredQuestions.length === 0) {
+          questionsToUse = chapterQuestions;
+        }
+        
+        const shuffled = [...questionsToUse].sort(() => Math.random() - 0.5);
+        const questionsToTake = Math.min(10, shuffled.length);
+        const formattedQuestions = shuffled.slice(0, questionsToTake).map((q, index) => ({
           id: index + 1,
           question: q.question,
           options: q.options,
