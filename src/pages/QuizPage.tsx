@@ -9,6 +9,8 @@ import { grade12Mathematics, getMathQuestionsForQuiz } from '@/data/grade12Mathe
 import { getGrade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
 import { getGrade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { getGrade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
+import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
+import { getGrade12ITQuestions } from '@/data/grade12ITQuestions';
 import QuestionExplanation from '@/components/QuestionExplanation';
 
 interface Question {
@@ -239,46 +241,96 @@ const QuizPage = () => {
         setIsLoading(false);
         return [];
       }
-      
-      return [
-        {
-          id: 1,
-          question: "What is 2 + 3?",
-          options: ["4", "5", "6", "7"],
-          correctAnswer: 1,
-          explanation: "2 + 3 = 5. This is basic addition where we combine two numbers to get their sum."
-        },
-        {
-          id: 2,
-          question: "Which number comes after 9?",
-          options: ["8", "10", "11", "12"],
-          correctAnswer: 1,
-          explanation: "The number sequence continues: 8, 9, 10, 11... So 10 comes after 9."
-        },
-        {
-          id: 3,
-          question: "What is 10 - 4?",
-          options: ["5", "6", "7", "8"],
-          correctAnswer: 1,
-          explanation: "10 - 4 = 6. This is basic subtraction where we remove 4 from 10."
-        },
-        {
-          id: 4,
-          question: "How many sides does a triangle have?",
-          options: ["2", "3", "4", "5"],
-          correctAnswer: 1,
-          explanation: "A triangle has exactly 3 sides by definition. This is a fundamental geometric property."
-        },
-        {
-          id: 5,
-          question: "What is 3 × 2?",
-          options: ["5", "6", "7", "8"],
-          correctAnswer: 1,
-          explanation: "3 × 2 = 6. This is basic multiplication where we add 3 two times: 3 + 3 = 6."
-        }
-      ];
-    };
 
+      if (decodedSubject === 'Geography' && grade === '12') {
+        console.log('Loading Geography questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
+        
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const geographyQuestions = getGrade12GeographyQuestions(decodedChapter, difficultyLevel, 10);
+        
+        console.log('Loaded Geography questions:', geographyQuestions.length);
+        
+        if (geographyQuestions.length === 0) {
+          const easyQuestions = getGrade12GeographyQuestions(decodedChapter, 'easy', 3);
+          const mediumQuestions = getGrade12GeographyQuestions(decodedChapter, 'medium', 3);
+          const hardQuestions = getGrade12GeographyQuestions(decodedChapter, 'hard', 4);
+          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+          
+          const formattedQuestions = allQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        } else {
+          const formattedQuestions = geographyQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          console.log('Formatted Geography questions with explanations:', formattedQuestions);
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        }
+        
+        setIsLoading(false);
+        return [];
+      }
+
+      if (decodedSubject === 'Information Technology' && grade === '12') {
+        console.log('Loading Information Technology questions for:', { chapter: decodedChapter, difficulty: selectedDifficulty });
+        
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const itQuestions = getGrade12ITQuestions(decodedChapter, difficultyLevel, 10);
+        
+        console.log('Loaded Information Technology questions:', itQuestions.length);
+        
+        if (itQuestions.length === 0) {
+          const easyQuestions = getGrade12ITQuestions(decodedChapter, 'easy', 3);
+          const mediumQuestions = getGrade12ITQuestions(decodedChapter, 'medium', 3);
+          const hardQuestions = getGrade12ITQuestions(decodedChapter, 'hard', 4);
+          const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+          
+          const formattedQuestions = allQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        } else {
+          const formattedQuestions = itQuestions.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.options.indexOf(q.correct),
+            explanation: q.explanation || `This question tests your understanding of ${decodedChapter}. The correct answer demonstrates key concepts in this unit.`
+          }));
+          
+          console.log('Formatted Information Technology questions with explanations:', formattedQuestions);
+          setQuestions(formattedQuestions);
+          setAnswers(new Array(formattedQuestions.length).fill(null));
+        }
+        
+        setIsLoading(false);
+        return [];
+      }
+      
+      // Fallback for unsupported subjects - show error instead of placeholder questions
+      console.error(`Subject "${decodedSubject}" is not supported for Grade ${grade}`);
+      return [];
+    };
+    
     if (decodedSubject === 'Biology' && grade === '12') {
       initializeQuestions();
     } else if (decodedSubject === 'Chemistry' && grade === '12') {
@@ -286,6 +338,10 @@ const QuizPage = () => {
     } else if (decodedSubject === 'Physics' && grade === '12') {
       initializeQuestions();
     } else if (decodedSubject === 'Agriculture' && grade === '12') {
+      initializeQuestions();
+    } else if (decodedSubject === 'Geography' && grade === '12') {
+      initializeQuestions();
+    } else if (decodedSubject === 'Information Technology' && grade === '12') {
       initializeQuestions();
     } else {
       const quizQuestions = initializeQuestions();
@@ -490,8 +546,44 @@ const QuizPage = () => {
         setIsLoading(false);
         return [];
       }
+
+      if (decodedSubject === 'Geography' && grade === '12') {
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const geographyQuestions = getGrade12GeographyQuestions(decodedChapter, difficultyLevel, 10);
+        
+        const formattedQuestions = geographyQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
+        setIsLoading(false);
+        return [];
+      }
+
+      if (decodedSubject === 'Information Technology' && grade === '12') {
+        const difficultyLevel = selectedDifficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+        const itQuestions = getGrade12ITQuestions(decodedChapter, difficultyLevel, 10);
+        
+        const formattedQuestions = itQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.options.indexOf(q.correct),
+          explanation: q.explanation || `This question tests your understanding of ${decodedChapter}.`
+        }));
+        
+        setQuestions(formattedQuestions);
+        setAnswers(new Array(formattedQuestions.length).fill(null));
+        setIsLoading(false);
+        return [];
+      }
       
-      return questions;
+      return [];
     };
     
     if (decodedSubject === 'Biology' && grade === '12') {
@@ -501,6 +593,10 @@ const QuizPage = () => {
     } else if (decodedSubject === 'Physics' && grade === '12') {
       initializeQuestions();
     } else if (decodedSubject === 'Agriculture' && grade === '12') {
+      initializeQuestions();
+    } else if (decodedSubject === 'Geography' && grade === '12') {
+      initializeQuestions();
+    } else if (decodedSubject === 'Information Technology' && grade === '12') {
       initializeQuestions();
     } else {
       const newQuestions = initializeQuestions();
