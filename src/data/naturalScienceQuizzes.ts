@@ -2,6 +2,7 @@ import { grade12BiologyQuestions, getGrade12BiologyQuestions } from './grade12Bi
 import { grade12ChemistryQuestions, getGrade12ChemistryQuestions } from './grade12ChemistryQuestions';
 import { grade12EnglishQuestions } from './grade12EnglishQuestions';
 import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade12GeographyQuestions';
+import { grade12HistoryQuestions, getGrade12HistoryQuestions } from './grade12HistoryQuestions';
 
 export interface Question {
   id: string;
@@ -352,6 +353,32 @@ export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty
     }
     
     console.log('Available Grade 12 Geography units:', Object.keys(grade12GeographyQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 History questions
+  if (subject.toLowerCase() === 'history' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 History for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'Easy' | 'Medium' | 'Hard';
+    const questions = getGrade12HistoryQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 History questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    console.log('Available Grade 12 History units:', Object.keys(grade12HistoryQuestions));
     console.log('Requested unit:', chapter);
     return [];
   }

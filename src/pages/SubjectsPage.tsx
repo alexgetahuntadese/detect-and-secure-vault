@@ -16,7 +16,8 @@ import {
   Languages,
   Users,
   Briefcase,
-  Wheat
+  Wheat,
+  ScrollText
 } from 'lucide-react';
 
 const SubjectsPage = () => {
@@ -29,7 +30,7 @@ const SubjectsPage = () => {
     'Chemistry': Zap,
     'Biology': TreePine,
     'Geography': Globe,
-    'History': Book,
+    'History': ScrollText,
     'English': Languages,
     'Amharic': Book,
     'Art': Palette,
@@ -92,7 +93,7 @@ const SubjectsPage = () => {
     },
     {
       name: 'History',
-      description: 'Ethiopian and world history, civilizations',
+      description: 'Ethiopian and world history, civilizations, and cultural heritage',
       chapters: 9,
       estimatedTime: '32 hours',
       difficulty: 'Intermediate',

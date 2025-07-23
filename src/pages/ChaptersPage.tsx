@@ -11,6 +11,7 @@ import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { grade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
 import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
 import { grade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
+import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 
 const ChaptersPage = () => {
   const navigate = useNavigate();
@@ -194,6 +195,31 @@ const ChaptersPage = () => {
         };
       });
     }
+
+    if (decodedSubject === 'History' && grade === '12') {
+      return Object.keys(grade12HistoryQuestions).map((unitName, index) => {
+        const questions = grade12HistoryQuestions[unitName];
+        const easyQuestions = questions.filter(q => q.difficulty === 'Easy').length;
+        const mediumQuestions = questions.filter(q => q.difficulty === 'Medium').length;
+        const hardQuestions = questions.filter(q => q.difficulty === 'Hard').length;
+        
+        return {
+          id: index + 1,
+          title: unitName,
+          description: getHistoryUnitDescription(unitName),
+          duration: getDurationEstimate(questions.length),
+          difficulty: getDominantDifficulty(easyQuestions, mediumQuestions, hardQuestions),
+          progress: Math.floor(Math.random() * 101),
+          isCompleted: Math.random() > 0.7,
+          questionsCount: questions.length,
+          difficultyBreakdown: {
+            easy: easyQuestions,
+            medium: mediumQuestions,
+            hard: hardQuestions
+          }
+        };
+      });
+    }
     
     return [
       {
@@ -350,6 +376,21 @@ const ChaptersPage = () => {
       "Unit 8: Geographical Enquiry and Map Making": "Master GIS, remote sensing, cartography, and geographic research methods"
     };
     return descriptions[unitName] || "Comprehensive study of geographic principles and contemporary issues";
+  };
+
+  const getHistoryUnitDescription = (unitName: string) => {
+    const descriptions: { [key: string]: string } = {
+      "Unit 1: Development of Capitalism and Nationalism from 1815 to 1914": "Explore the rise of capitalism, nationalism, and industrial society in 19th century Europe",
+      "Unit 2: Africa and the Colonial Experience (1880s – 1960s)": "Study European colonization of Africa, resistance movements, and the path to independence",
+      "Unit 3: Social, Economic, and Political Developments in Ethiopia, Mid, 19th C. to 1941": "Examine Ethiopian modernization, the Battle of Adwa, and resistance to colonialism",
+      "Unit 4: Society and Politics in the Age of World Wars, 1914 - 1945": "Analyze the causes, conduct, and consequences of the two World Wars",
+      "Unit 5: Global and Regional Developments Since 1945": "Investigate Cold War dynamics, decolonization, and post-war global transformations",
+      "Unit 6: Ethiopia: Internal Developments and External Influences from 1941 to 1991": "Study Ethiopia under Haile Selassie and the Derg, including revolution and socialist transformation",
+      "Unit 7: Africa since the 1960s": "Examine post-independence challenges, development efforts, and contemporary African politics",
+      "Unit 8: Post-1991 Developments in Ethiopia": "Analyze Ethiopia's federal experiment, economic growth, and political transformation since 1991",
+      "Unit 9: Indigenous Knowledge Systems and Heritages of Ethiopia": "Explore Ethiopian traditional knowledge, cultural heritage, and indigenous practices"
+    };
+    return descriptions[unitName] || "Comprehensive study of historical developments and their contemporary significance";
   };
 
   const getDurationEstimate = (questionCount: number) => {
