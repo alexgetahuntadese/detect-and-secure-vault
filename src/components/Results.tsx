@@ -3,7 +3,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Clock, RotateCcw } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, RotateCcw, ArrowLeft } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Question {
   id: string;
@@ -30,6 +31,8 @@ const Results = ({
   questions, 
   selectedAnswers 
 }: ResultsProps) => {
+  const navigate = useNavigate();
+  const params = useParams();
   const percentage = Math.round((score / totalQuestions) * 100);
   
   const getScoreColor = (percentage: number) => {
@@ -44,11 +47,28 @@ const Results = ({
     return 'bg-red-500';
   };
 
+  const getPerformanceMessage = (percentage: number) => {
+    if (percentage >= 90) return 'Excellent! Outstanding performance!';
+    if (percentage >= 80) return 'Great job! Very good understanding!';
+    if (percentage >= 70) return 'Good work! You\'re on the right track!';
+    if (percentage >= 60) return 'Fair performance. Keep practicing!';
+    if (percentage >= 50) return 'You\'re improving. More study needed!';
+    return 'Keep studying and try again!';
+  };
+
+  const handleBackToChapters = () => {
+    if (params.grade && params.subject) {
+      navigate(`/grade/${params.grade}/subject/${params.subject}/chapters`);
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/5 border-white/20 text-white">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold mb-4">Quiz Results</CardTitle>
+          <CardTitle className="text-2xl font-bold mb-4 text-white">Quiz Complete!</CardTitle>
           <div className="space-y-4">
             <div className={`text-6xl font-bold ${getScoreColor(percentage)}`}>
               {percentage}%
@@ -58,6 +78,9 @@ const Results = ({
             >
               {score} out of {totalQuestions} correct
             </Badge>
+            <p className="text-lg text-gray-300">
+              {getPerformanceMessage(percentage)}
+            </p>
           </div>
         </CardHeader>
         <CardContent className="text-center space-y-4">
@@ -65,13 +88,23 @@ const Results = ({
             <Clock className="h-5 w-5" />
             <span>Time taken: {timeTaken}</span>
           </div>
-          <Button 
-            onClick={onRetakeQuiz}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Retake Quiz
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              onClick={onRetakeQuiz}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Retake Quiz
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleBackToChapters}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Chapters
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -94,12 +127,12 @@ const Results = ({
                     <XCircle className="h-6 w-6 text-red-500" />
                   )}
                 </div>
-                <CardTitle className="text-lg font-medium">
+                <CardTitle className="text-lg font-medium text-white">
                   {question.question}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {question.options.map((option, optionIndex) => {
+                {question.options && question.options.map((option, optionIndex) => {
                   let buttonClass = "w-full justify-start text-left h-auto p-3 ";
                   
                   if (option === question.correct) {
@@ -125,10 +158,12 @@ const Results = ({
                   );
                 })}
                 
-                <div className="mt-4 p-4 bg-blue-900/30 border border-blue-500/30 rounded-lg">
-                  <h4 className="font-semibold text-blue-300 mb-2">Explanation:</h4>
-                  <p className="text-gray-300">{question.explanation}</p>
-                </div>
+                {question.explanation && (
+                  <div className="mt-4 p-4 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+                    <h4 className="font-semibold text-blue-300 mb-2">Explanation:</h4>
+                    <p className="text-gray-300">{question.explanation}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );

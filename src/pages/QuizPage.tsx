@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
 import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { grade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
@@ -13,8 +13,9 @@ import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions'
 import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import QuestionCard from '@/components/QuestionCard';
 import Results from '@/components/Results';
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft } from 'lucide-react';
 
 interface Question {
   id: string;
@@ -24,97 +25,107 @@ interface Question {
   explanation: string;
 }
 
-// Helper function to get questions from different subjects
 const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
   let allQuestions: any[] = [];
   
   console.log('Getting questions for:', { subject, chapter, difficulty });
   
-  switch (subject) {
-    case 'Mathematics':
-      const mathData = grade12Mathematics[chapter];
-      allQuestions = Array.isArray(mathData) ? mathData : [];
-      break;
-    case 'Physics':
-      const physicsData = grade12PhysicsQuestions[chapter];
-      allQuestions = Array.isArray(physicsData) ? physicsData : [];
-      break;
-    case 'Chemistry':
-      const chemData = grade12ChemistryQuestions[chapter];
-      allQuestions = Array.isArray(chemData) ? chemData : [];
-      break;
-    case 'Biology':
-      const bioData = grade12BiologyQuestions[chapter];
-      allQuestions = Array.isArray(bioData) ? bioData : [];
-      break;
-    case 'English':
-      const engData = grade12EnglishQuestions[chapter];
-      allQuestions = Array.isArray(engData) ? engData : [];
-      break;
-    case 'Civics':
-      const civicsData = grade12CivicsQuestions[chapter];
-      allQuestions = Array.isArray(civicsData) ? civicsData : [];
-      break;
-    case 'History':
-      const histData = grade12HistoryQuestions[chapter];
-      allQuestions = Array.isArray(histData) ? histData : [];
-      break;
-    case 'IT':
-      const itData = grade12ITQuestions[chapter];
-      allQuestions = Array.isArray(itData) ? itData : [];
-      break;
-    case 'Agriculture':
-      const agriData = grade12AgricultureQuestions[chapter];
-      allQuestions = Array.isArray(agriData) ? agriData : [];
-      break;
-    case 'Geography':
-      return getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
-    default:
-      console.warn('Unknown subject:', subject);
-      return [];
-  }
-
-  console.log('Raw questions found:', allQuestions.length);
-
-  // Filter by difficulty if the questions have difficulty property
-  const filteredQuestions = allQuestions.filter(q => {
-    if (q.difficulty) {
-      return q.difficulty.toLowerCase() === difficulty.toLowerCase();
+  try {
+    switch (subject) {
+      case 'Mathematics':
+        const mathData = grade12Mathematics[chapter];
+        allQuestions = Array.isArray(mathData) ? mathData : [];
+        break;
+      case 'Physics':
+        const physicsData = grade12PhysicsQuestions[chapter];
+        allQuestions = Array.isArray(physicsData) ? physicsData : [];
+        break;
+      case 'Chemistry':
+        const chemData = grade12ChemistryQuestions[chapter];
+        allQuestions = Array.isArray(chemData) ? chemData : [];
+        break;
+      case 'Biology':
+        const bioData = grade12BiologyQuestions[chapter];
+        allQuestions = Array.isArray(bioData) ? bioData : [];
+        break;
+      case 'English':
+        const engData = grade12EnglishQuestions[chapter];
+        allQuestions = Array.isArray(engData) ? engData : [];
+        break;
+      case 'Civics':
+        const civicsData = grade12CivicsQuestions[chapter];
+        allQuestions = Array.isArray(civicsData) ? civicsData : [];
+        break;
+      case 'History':
+        const histData = grade12HistoryQuestions[chapter];
+        allQuestions = Array.isArray(histData) ? histData : [];
+        break;
+      case 'IT':
+        const itData = grade12ITQuestions[chapter];
+        allQuestions = Array.isArray(itData) ? itData : [];
+        break;
+      case 'Agriculture':
+        const agriData = grade12AgricultureQuestions[chapter];
+        allQuestions = Array.isArray(agriData) ? agriData : [];
+        break;
+      case 'Geography':
+        return getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
+      default:
+        console.warn('Unknown subject:', subject);
+        return [];
     }
-    return true; // If no difficulty property, include all questions
-  });
 
-  console.log('Filtered questions by difficulty:', filteredQuestions.length);
+    console.log('Raw questions found:', allQuestions.length);
 
-  // Convert to standard Question format and shuffle
-  const convertedQuestions = filteredQuestions.map((q, index) => ({
-    id: q.id || `question-${index}-${Math.random().toString(36).substr(2, 9)}`,
-    question: q.question || 'Question not available',
-    options: Array.isArray(q.options) ? q.options : [],
-    correct: q.correct || '',
-    explanation: q.explanation || "No explanation provided."
-  }));
+    // Filter by difficulty if the questions have difficulty property
+    const filteredQuestions = allQuestions.filter(q => {
+      if (q.difficulty) {
+        return q.difficulty.toLowerCase() === difficulty.toLowerCase();
+      }
+      return true;
+    });
 
-  // Filter out questions with invalid data
-  const validQuestions = convertedQuestions.filter(q => 
-    q.question !== 'Question not available' && 
-    q.options.length > 0 && 
-    q.correct
-  );
+    console.log('Filtered questions by difficulty:', filteredQuestions.length);
 
-  const shuffled = validQuestions.sort(() => Math.random() - 0.5);
-  const finalQuestions = shuffled.slice(0, count);
-  
-  console.log('Final questions to return:', finalQuestions.length);
-  console.log('Sample question:', finalQuestions[0]);
-  return finalQuestions;
+    // Convert to standard Question format
+    const convertedQuestions = filteredQuestions.map((q, index) => ({
+      id: q.id?.toString() || `question-${index}-${Math.random().toString(36).substr(2, 9)}`,
+      question: q.question || 'Question not available',
+      options: Array.isArray(q.options) ? q.options : [],
+      correct: q.correct || '',
+      explanation: q.explanation || "No explanation provided."
+    }));
+
+    // Filter out invalid questions
+    const validQuestions = convertedQuestions.filter(q => 
+      q.question !== 'Question not available' && 
+      q.options.length >= 2 && 
+      q.correct && 
+      q.options.includes(q.correct)
+    );
+
+    console.log('Valid questions:', validQuestions.length);
+
+    // Shuffle and return requested count
+    const shuffled = validQuestions.sort(() => Math.random() - 0.5);
+    const finalQuestions = shuffled.slice(0, Math.min(count, shuffled.length));
+    
+    console.log('Final questions to return:', finalQuestions.length);
+    
+    return finalQuestions;
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    return [];
+  }
 };
 
 const QuizPage = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const subject = params.subject;
   const chapterId = params.chapterId ? decodeURIComponent(params.chapterId) : null;
   const difficulty = params.difficulty;
+  const grade = params.grade;
   
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -123,11 +134,18 @@ const QuizPage = () => {
   const [startTime, setStartTime] = useState<number>(0);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const initializeQuestions = () => {
-    console.log('Initializing questions with params:', { subject, chapterId, difficulty });
+    console.log('Initializing questions with params:', { subject, chapterId, difficulty, grade });
     
-    if (subject && chapterId && difficulty) {
+    if (!subject || !chapterId || !difficulty) {
+      setError('Missing required quiz parameters');
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
       const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10);
       
       if (fetchedQuestions.length > 0) {
@@ -138,14 +156,18 @@ const QuizPage = () => {
         setShowResults(false);
         setStartTime(Date.now());
         setElapsedTime(0);
+        setError(null);
       } else {
         console.error('No questions found for:', { subject, chapter: chapterId, difficulty });
+        setError(`No questions available for ${subject} - ${chapterId} (${difficulty} level)`);
         setQuestions([]);
       }
-    } else {
-      console.error('Missing required parameters:', { subject, chapterId, difficulty });
+    } catch (err) {
+      console.error('Error initializing questions:', err);
+      setError('Failed to load quiz questions. Please try again.');
       setQuestions([]);
     }
+    
     setIsLoading(false);
   };
 
@@ -159,10 +181,12 @@ const QuizPage = () => {
     if (!showResults && !isLoading && startTime > 0 && questions.length > 0) {
       intervalId = setInterval(() => {
         setElapsedTime(Date.now() - startTime);
-      }, 10);
+      }, 100);
     }
 
-    return () => clearInterval(intervalId);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [showResults, startTime, isLoading, questions.length]);
 
   const handleAnswerSelect = (answer: string) => {
@@ -195,29 +219,81 @@ const QuizPage = () => {
     const seconds = totalSeconds % 60;
     const milliseconds = Math.floor((ms % 1000) / 10);
   
-    const formattedMinutes = String(minutes).padStart(2, '0');
-    const formattedSeconds = String(seconds).padStart(2, '0');
-    const formattedMilliseconds = String(milliseconds).padStart(2, '0');
-  
-    return `${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
   };
 
   const handleRetakeQuiz = () => {
     initializeQuestions();
   };
 
+  const handleBackToChapters = () => {
+    if (grade && subject) {
+      navigate(`/grade/${grade}/subject/${subject}/chapters`);
+    } else {
+      navigate(-1);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4 text-white">
-          Loading Quiz...
-        </h2>
+      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            Loading Quiz...
+          </h2>
+        </div>
         <div className="space-y-4">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[400px]" />
-          <Skeleton className="h-10" />
-          <Skeleton className="h-10" />
-          <Skeleton className="h-10" />
+          <Skeleton className="h-4 w-[250px] bg-slate-700" />
+          <Skeleton className="h-4 w-[400px] bg-slate-700" />
+          <Skeleton className="h-10 bg-slate-700" />
+          <Skeleton className="h-10 bg-slate-700" />
+          <Skeleton className="h-10 bg-slate-700" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            Quiz Error
+          </h2>
+        </div>
+        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6">
+          <p className="text-red-400 text-lg mb-4">{error}</p>
+          <div className="space-x-4">
+            <Button 
+              onClick={initializeQuiz}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Try Again
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleBackToChapters}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              Go Back
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -225,22 +301,53 @@ const QuizPage = () => {
 
   if (!subject || !chapterId || !difficulty) {
     return (
-      <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4 text-white">
-          Invalid Quiz Parameters
-        </h2>
-        <p className="text-white">Missing required parameters. Please navigate from the subjects page.</p>
+      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            Invalid Quiz Parameters
+          </h2>
+        </div>
+        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-6">
+          <p className="text-yellow-400">Missing required parameters. Please navigate from the subjects page.</p>
+        </div>
       </div>
     );
   }
 
   if (questions.length === 0) {
     return (
-      <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4 text-white">
-          {subject} - {chapterId} ({difficulty})
-        </h2>
-        <p className="text-white">No questions available for this chapter and difficulty level.</p>
+      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            {subject} - {chapterId} ({difficulty})
+          </h2>
+        </div>
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6">
+          <p className="text-blue-400 text-lg mb-4">No questions available for this chapter and difficulty level.</p>
+          <Button 
+            variant="outline"
+            onClick={handleBackToChapters}
+            className="border-white/20 text-white hover:bg-white/10"
+          >
+            Choose Different Chapter
+          </Button>
+        </div>
       </div>
     );
   }
@@ -249,20 +356,51 @@ const QuizPage = () => {
 
   if (!currentQuestion) {
     return (
-      <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4 text-white">
-          Quiz Error
-        </h2>
-        <p className="text-white">Unable to load the current question. Please try refreshing the page.</p>
+      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            Quiz Error
+          </h2>
+        </div>
+        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6">
+          <p className="text-red-400">Unable to load the current question. Please try refreshing the page.</p>
+          <Button 
+            onClick={initializeQuestions}
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Retry
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4 text-white">
-        {subject} - {chapterId} ({difficulty})
-      </h2>
+    <div className="container mx-auto p-4 min-h-screen bg-slate-900">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            onClick={handleBackToChapters}
+            className="text-white hover:bg-slate-800 mr-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h2 className="text-2xl font-semibold text-white">
+            {subject} - {chapterId} ({difficulty})
+          </h2>
+        </div>
+      </div>
+
       {showResults ? (
         <Results 
           score={calculateScore()} 
@@ -293,7 +431,7 @@ const QuizPage = () => {
             <Button 
               onClick={handleNextQuestion} 
               disabled={!selectedAnswers[currentQuestionIndex]}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
             >
               {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'}
             </Button>

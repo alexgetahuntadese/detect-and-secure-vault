@@ -27,6 +27,17 @@ const QuestionCard = ({
   questionNumber, 
   totalQuestions 
 }: QuestionCardProps) => {
+  // Ensure we have valid question data
+  if (!question || !question.question || !Array.isArray(question.options) || question.options.length < 2) {
+    return (
+      <Card className="bg-red-900/20 border-red-500/30 text-white mb-6">
+        <CardContent className="p-6">
+          <p className="text-red-400">Invalid question data. Please try refreshing the quiz.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-white/5 border-white/20 text-white mb-6">
       <CardHeader>
@@ -35,7 +46,7 @@ const QuestionCard = ({
             Question {questionNumber} of {totalQuestions}
           </Badge>
         </div>
-        <CardTitle className="text-lg font-medium text-white">
+        <CardTitle className="text-lg font-medium text-white leading-relaxed">
           {question.question}
         </CardTitle>
       </CardHeader>
@@ -43,19 +54,19 @@ const QuestionCard = ({
         <div className="space-y-3">
           {question.options.map((option, index) => (
             <Button
-              key={index}
+              key={`${question.id}-option-${index}`}
               variant={selectedAnswer === option ? "default" : "outline"}
-              className={`w-full justify-start text-left h-auto p-4 ${
+              className={`w-full justify-start text-left h-auto p-4 transition-all duration-200 ${
                 selectedAnswer === option 
-                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                  : "bg-white/5 border-white/20 text-white hover:bg-white/10"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600" 
+                  : "bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30"
               }`}
               onClick={() => onAnswerSelect(option)}
             >
-              <span className="mr-3 font-semibold">
+              <span className="mr-3 font-semibold flex-shrink-0">
                 {String.fromCharCode(65 + index)}.
               </span>
-              {option}
+              <span className="flex-1">{option}</span>
             </Button>
           ))}
         </div>
