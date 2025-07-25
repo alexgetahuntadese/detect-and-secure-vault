@@ -1,5 +1,5 @@
 # Welcome to your Lovable project
- the next top startup from.Harar
+ the next top startup from Harar
 ## Project info
 
 **URL**: https://lovable.dev/projects/99f92d8f-37a6-4335-a056-b4aa5750c3d2
