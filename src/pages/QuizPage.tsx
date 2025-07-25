@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
@@ -26,6 +27,8 @@ interface Question {
 // Helper function to get questions from different subjects
 const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
   let allQuestions: any[] = [];
+  
+  console.log('Getting questions for:', { subject, chapter, difficulty });
   
   switch (subject) {
     case 'Mathematics':
@@ -67,8 +70,11 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
     case 'Geography':
       return getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
     default:
+      console.warn('Unknown subject:', subject);
       return [];
   }
+
+  console.log('Raw questions found:', allQuestions.length);
 
   // Filter by difficulty if the questions have difficulty property
   const filteredQuestions = allQuestions.filter(q => {
@@ -78,17 +84,22 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
     return true; // If no difficulty property, include all questions
   });
 
+  console.log('Filtered questions by difficulty:', filteredQuestions.length);
+
   // Convert to standard Question format and shuffle
   const convertedQuestions = filteredQuestions.map(q => ({
-    id: q.id,
+    id: q.id || Math.random().toString(36).substr(2, 9),
     question: q.question,
     options: q.options,
     correct: q.correct,
-    explanation: q.explanation
+    explanation: q.explanation || "No explanation provided."
   }));
 
   const shuffled = convertedQuestions.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  const finalQuestions = shuffled.slice(0, count);
+  
+  console.log('Final questions to return:', finalQuestions.length);
+  return finalQuestions;
 };
 
 const QuizPage = () => {
@@ -105,10 +116,13 @@ const QuizPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const initializeQuestions = () => {
+    console.log('Initializing questions with params:', { subject, chapterId, difficulty });
+    
     if (subject && chapterId && difficulty) {
       const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10);
       
       if (fetchedQuestions.length > 0) {
+        console.log('Questions loaded successfully:', fetchedQuestions.length);
         setQuestions(fetchedQuestions);
         setCurrentQuestionIndex(0);
         setSelectedAnswers({});
@@ -117,9 +131,13 @@ const QuizPage = () => {
         setElapsedTime(0);
         setIsLoading(false);
       } else {
-        console.log('No questions found for:', { subject, chapter: chapterId, difficulty });
+        console.error('No questions found for:', { subject, chapter: chapterId, difficulty });
+        setQuestions([]);
         setIsLoading(false);
       }
+    } else {
+      console.error('Missing required parameters:', { subject, chapterId, difficulty });
+      setIsLoading(false);
     }
   };
 
@@ -130,7 +148,7 @@ const QuizPage = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (!showResults && !isLoading) {
+    if (!showResults && !isLoading && startTime > 0) {
       intervalId = setInterval(() => {
         setElapsedTime(Date.now() - startTime);
       }, 10);
@@ -178,12 +196,12 @@ const QuizPage = () => {
     initializeQuestions();
   };
 
-  return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4 text-white">
-        {subject} - {chapterId} ({difficulty})
-      </h2>
-      {isLoading ? (
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-semibold mb-4 text-white">
+          Loading Quiz...
+        </h2>
         <div className="space-y-4">
           <Skeleton className="h-4 w-[250px]" />
           <Skeleton className="h-4 w-[400px]" />
@@ -191,7 +209,38 @@ const QuizPage = () => {
           <Skeleton className="h-10" />
           <Skeleton className="h-10" />
         </div>
-      ) : showResults ? (
+      </div>
+    );
+  }
+
+  if (!subject || !chapterId || !difficulty) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-semibold mb-4 text-white">
+          Invalid Quiz Parameters
+        </h2>
+        <p className="text-white">Missing required parameters. Please navigate from the subjects page.</p>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-semibold mb-4 text-white">
+          {subject} - {chapterId} ({difficulty})
+        </h2>
+        <p className="text-white">No questions available for this chapter and difficulty level.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-semibold mb-4 text-white">
+        {subject} - {chapterId} ({difficulty})
+      </h2>
+      {showResults ? (
         <Results 
           score={calculateScore()} 
           totalQuestions={questions.length} 
