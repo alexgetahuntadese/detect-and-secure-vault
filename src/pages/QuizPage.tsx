@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
@@ -10,6 +9,7 @@ import { grade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
 import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 import { grade12ITQuestions } from '@/data/grade12ITQuestions';
 import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
+import { grade11AgricultureQuestions, getGrade11AgricultureQuestions } from '@/data/grade11AgricultureQuestions';
 import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import QuestionCard from '@/components/QuestionCard';
 import Results from '@/components/Results';
@@ -25,12 +25,19 @@ interface Question {
   explanation: string;
 }
 
-const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
+const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10, grade: string = '12'): Question[] => {
   let allQuestions: any[] = [];
   
-  console.log('Getting questions for:', { subject, chapter, difficulty });
+  console.log('Getting questions for:', { subject, chapter, difficulty, grade });
   
   try {
+    // Handle Grade 11 Agriculture specifically
+    if (grade === '11' && subject.toLowerCase() === 'agriculture') {
+      console.log('Fetching Grade 11 Agriculture questions');
+      return getGrade11AgricultureQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
+    }
+    
+    // Handle Grade 12 subjects
     switch (subject) {
       case 'Mathematics':
         const mathData = grade12Mathematics[chapter];
@@ -143,14 +150,14 @@ const QuizPage = () => {
   const initializeQuestions = () => {
     console.log('Initializing questions with params:', { subject, chapterId, difficulty, grade });
     
-    if (!subject || !chapterId || !difficulty) {
+    if (!subject || !chapterId || !difficulty || !grade) {
       setError('Missing required quiz parameters');
       setIsLoading(false);
       return;
     }
     
     try {
-      const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10);
+      const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10, grade);
       
       if (fetchedQuestions.length > 0) {
         console.log('Questions loaded successfully:', fetchedQuestions.length);
@@ -162,8 +169,8 @@ const QuizPage = () => {
         setElapsedTime(0);
         setError(null);
       } else {
-        console.error('No questions found for:', { subject, chapter: chapterId, difficulty });
-        setError(`No questions available for ${subject} - ${chapterId} (${difficulty} level)`);
+        console.error('No questions found for:', { subject, chapter: chapterId, difficulty, grade });
+        setError(`No questions available for Grade ${grade} ${subject} - ${chapterId} (${difficulty} level)`);
         setQuestions([]);
       }
     } catch (err) {
@@ -177,7 +184,7 @@ const QuizPage = () => {
 
   useEffect(() => {
     initializeQuestions();
-  }, [subject, chapterId, difficulty]);
+  }, [subject, chapterId, difficulty, grade]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -313,7 +320,7 @@ const QuizPage = () => {
     );
   }
 
-  if (!subject || !chapterId || !difficulty) {
+  if (!subject || !chapterId || !difficulty || !grade) {
     return (
       <div className="container mx-auto p-4 min-h-screen bg-slate-900">
         <div className="flex items-center mb-6">
@@ -349,7 +356,7 @@ const QuizPage = () => {
             Back
           </Button>
           <h2 className="text-2xl font-semibold text-white">
-            {subject} - {chapterId} ({difficulty})
+            Grade {grade} {subject} - {chapterId} ({difficulty})
           </h2>
         </div>
         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6">
@@ -410,7 +417,7 @@ const QuizPage = () => {
             Back
           </Button>
           <h2 className="text-2xl font-semibold text-white">
-            {subject} - {chapterId} ({difficulty})
+            Grade {grade} {subject} - {chapterId} ({difficulty})
           </h2>
         </div>
       </div>
