@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getSubjectsForGrade } from '@/data/naturalScienceQuizzes';
-import SubjectCard from '@/components/SubjectCard';
+import { getSubjectsForGrade, getSocialScienceSubjectsForGrade, getOtherSubjectsForGrade } from '@/data/naturalScienceQuizzes';
+import SubjectSection from '@/components/SubjectSection';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SubjectsPage = () => {
   const { grade } = useParams();
   const navigate = useNavigate();
-  const [subjects, setSubjects] = useState<any[]>([]);
+  const [naturalScienceSubjects, setNaturalScienceSubjects] = useState<any[]>([]);
+  const [socialScienceSubjects, setSocialScienceSubjects] = useState<any[]>([]);
+  const [otherSubjects, setOtherSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const gradeNumber = parseInt(grade || '12', 10);
@@ -27,13 +29,19 @@ const SubjectsPage = () => {
     const loadSubjects = () => {
       setLoading(true);
       try {
-        const allSubjects = getSubjectsForGrade(gradeNumber);
-        
-        if (gradeNumber === 11) {
-          // For Grade 11, we have Agriculture
-          setSubjects(Object.values(allSubjects));
-        } else if (gradeNumber === 12) {
-          setSubjects(Object.values(allSubjects));
+        const naturalSubjects = getSubjectsForGrade(gradeNumber);
+        setNaturalScienceSubjects(Object.values(naturalSubjects));
+
+        if (gradeNumber === 12) {
+          const socialSubjects = getSocialScienceSubjectsForGrade(gradeNumber);
+          setSocialScienceSubjects(Object.values(socialSubjects));
+          
+          const otherSubs = getOtherSubjectsForGrade(gradeNumber);
+          setOtherSubjects(Object.values(otherSubs));
+        } else if (gradeNumber === 11) {
+          // For Grade 11, we now have all subjects in one place
+          setSocialScienceSubjects([]);
+          setOtherSubjects([]);
         }
       } catch (error) {
         console.error('Error loading subjects:', error);
@@ -113,26 +121,33 @@ const SubjectsPage = () => {
         </h1>
       </div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold text-white mb-4">
-          {gradeNumber === 11 ? 'Available Subjects' : 'Natural Sciences'}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {subjects.map((subject, index) => (
-            <SubjectCard
-              key={index}
-              subject={subject}
-              progress={{ 
-                completed: Math.floor(Math.random() * subject.chapters.length), 
-                total: subject.chapters.length, 
-                percentage: Math.floor((Math.random() * subject.chapters.length / subject.chapters.length) * 100)
-              }}
-              grade={gradeNumber}
-              onSelectQuiz={handleSelectQuiz}
-            />
-          ))}
-        </div>
-      </section>
+      <SubjectSection
+        title={gradeNumber === 11 ? "All Subjects" : "Natural Sciences"}
+        subjects={naturalScienceSubjects}
+        badgeColor="bg-blue-100 text-blue-800"
+        onSelectQuiz={handleSelectQuiz}
+        grade={gradeNumber}
+      />
+
+      {gradeNumber === 12 && socialScienceSubjects.length > 0 && (
+        <SubjectSection
+          title="Social Sciences"
+          subjects={socialScienceSubjects}
+          badgeColor="bg-green-100 text-green-800"
+          onSelectQuiz={handleSelectQuiz}
+          grade={gradeNumber}
+        />
+      )}
+
+      {gradeNumber === 12 && otherSubjects.length > 0 && (
+        <SubjectSection
+          title="Other Subjects"
+          subjects={otherSubjects}
+          badgeColor="bg-purple-100 text-purple-800"
+          onSelectQuiz={handleSelectQuiz}
+          grade={gradeNumber}
+        />
+      )}
     </div>
   );
 };
