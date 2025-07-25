@@ -1,25 +1,9 @@
 
-import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-// import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from '@/components/ui/dialog';
-import { 
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
 import { ChevronRight, BookOpen, Target } from 'lucide-react';
-import ChapterCard from './ChapterCard';
+import { useNavigate } from 'react-router-dom';
 
 interface SubjectCardProps {
   subject: {
@@ -34,11 +18,10 @@ interface SubjectCardProps {
   };
   grade: number;
   onSelectQuiz: (quiz: any) => void;
-  isMobile?: boolean;
 }
 
-const SubjectCard = ({ subject, progress, grade, onSelectQuiz, isMobile = false }: SubjectCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+const SubjectCard = ({ subject, progress, grade, onSelectQuiz }: SubjectCardProps) => {
+  const navigate = useNavigate();
 
   const getProgressColor = (percentage: number) => {
     if (percentage >= 80) return 'text-green-500';
@@ -47,35 +30,19 @@ const SubjectCard = ({ subject, progress, grade, onSelectQuiz, isMobile = false 
     return 'text-red-500';
   };
 
-  const ChapterContent = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <subject.icon className="h-6 w-6 text-blue-500" />
-          <h3 className="text-lg font-semibold">{subject.name}</h3>
-        </div>
-        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-          {subject.chapters.length} chapters
-        </Badge>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-        {subject.chapters.map((chapter, index) => (
-          <ChapterCard
-            key={index}
-            chapter={chapter}
-            subject={subject.name}
-            subjectIcon={subject.icon}
-            onSelectQuiz={onSelectQuiz}
-            grade={grade}
-          />
-        ))}
-      </div>
-    </div>
-  );
+  const handleCardClick = () => {
+    if (grade === 11) {
+      navigate(`/grade/11/subject/${subject.name.toLowerCase().replace(/\s+/g, '_')}/chapters`);
+    } else {
+      navigate(`/grade/${grade}/subject/${subject.name.toLowerCase().replace(/\s+/g, '_')}/chapters`);
+    }
+  };
 
-  const cardContent = (
-    <Card className="bg-white/5 border-white/20 text-white hover:bg-white/10 transition-all duration-300 cursor-pointer group">
+  return (
+    <Card 
+      className="bg-white/5 border-white/20 text-white hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+      onClick={handleCardClick}
+    >
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -129,42 +96,6 @@ const SubjectCard = ({ subject, progress, grade, onSelectQuiz, isMobile = false 
         </div>
       </CardContent>
     </Card>
-  );
-
-  if (isMobile) {
-    return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
-          {cardContent}
-        </DrawerTrigger>
-        <DrawerContent className="bg-slate-900 text-white border-white/20">
-          <DrawerHeader>
-            <DrawerTitle className="text-white">
-              {subject.name} - Grade {grade}
-            </DrawerTitle>
-          </DrawerHeader>
-          <div className="p-6">
-            <ChapterContent />
-          </div>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {cardContent}
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl bg-slate-900 text-white border-white/20">
-        <DialogHeader>
-          <DialogTitle className="text-white">
-            {subject.name} - Grade {grade}
-          </DialogTitle>
-        </DialogHeader>
-        <ChapterContent />
-      </DialogContent>
-    </Dialog>
   );
 };
 

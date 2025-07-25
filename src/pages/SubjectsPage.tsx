@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getSubjectsForGrade, getSocialScienceSubjectsForGrade, getOtherSubjectsForGrade } from '@/data/naturalScienceQuizzes';
-import SubjectSection from '@/components/SubjectSection';
+import SubjectCard from '@/components/SubjectCard';
 import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -25,6 +26,13 @@ const SubjectsPage = () => {
     console.log('Quiz selected:', quiz);
   };
 
+  // Mock progress data for demonstration
+  const getMockProgress = () => ({
+    completed: Math.floor(Math.random() * 10),
+    total: 10,
+    percentage: Math.floor(Math.random() * 100)
+  });
+
   useEffect(() => {
     const loadSubjects = () => {
       setLoading(true);
@@ -39,7 +47,6 @@ const SubjectsPage = () => {
           const otherSubs = getOtherSubjectsForGrade(gradeNumber);
           setOtherSubjects(Object.values(otherSubs));
         } else if (gradeNumber === 11) {
-          // For Grade 11, we now have all subjects in one place
           setSocialScienceSubjects([]);
           setOtherSubjects([]);
         }
@@ -70,10 +77,10 @@ const SubjectsPage = () => {
             Loading Grade {gradeNumber} Subjects...
           </h2>
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-[250px] bg-slate-700" />
-          <Skeleton className="h-4 w-[400px] bg-slate-700" />
-          <Skeleton className="h-24 bg-slate-700" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-48 bg-slate-700" />
+          ))}
         </div>
       </div>
     );
@@ -105,6 +112,33 @@ const SubjectsPage = () => {
     );
   }
 
+  const renderSubjectSection = (title: string, subjects: any[], badgeColor: string) => {
+    if (subjects.length === 0) return null;
+
+    return (
+      <div className="mb-8">
+        <div className="flex items-center mb-6">
+          <h2 className="text-2xl font-semibold text-white">{title}</h2>
+          <Badge variant="secondary" className={`ml-3 ${badgeColor}`}>
+            {subjects.length} subjects
+          </Badge>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subjects.map((subject, index) => (
+            <SubjectCard
+              key={index}
+              subject={subject}
+              progress={getMockProgress()}
+              grade={gradeNumber}
+              onSelectQuiz={handleSelectQuiz}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto p-4 min-h-screen bg-slate-900">
       <div className="flex items-center mb-6">
@@ -121,32 +155,22 @@ const SubjectsPage = () => {
         </h1>
       </div>
 
-      <SubjectSection
-        title={gradeNumber === 11 ? "All Subjects" : "Natural Sciences"}
-        subjects={naturalScienceSubjects}
-        badgeColor="bg-blue-100 text-blue-800"
-        onSelectQuiz={handleSelectQuiz}
-        grade={gradeNumber}
-      />
-
-      {gradeNumber === 12 && socialScienceSubjects.length > 0 && (
-        <SubjectSection
-          title="Social Sciences"
-          subjects={socialScienceSubjects}
-          badgeColor="bg-green-100 text-green-800"
-          onSelectQuiz={handleSelectQuiz}
-          grade={gradeNumber}
-        />
+      {renderSubjectSection(
+        gradeNumber === 11 ? "All Subjects" : "Natural Sciences",
+        naturalScienceSubjects,
+        "bg-blue-100 text-blue-800"
       )}
 
-      {gradeNumber === 12 && otherSubjects.length > 0 && (
-        <SubjectSection
-          title="Other Subjects"
-          subjects={otherSubjects}
-          badgeColor="bg-purple-100 text-purple-800"
-          onSelectQuiz={handleSelectQuiz}
-          grade={gradeNumber}
-        />
+      {gradeNumber === 12 && renderSubjectSection(
+        "Social Sciences",
+        socialScienceSubjects,
+        "bg-green-100 text-green-800"
+      )}
+
+      {gradeNumber === 12 && renderSubjectSection(
+        "Other Subjects",
+        otherSubjects,
+        "bg-purple-100 text-purple-800"
       )}
     </div>
   );
