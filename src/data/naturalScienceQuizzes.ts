@@ -1,3 +1,4 @@
+
 import { BrainCircuit, Atom, BookCopy, Lightbulb, Sprout, Globe2, GraduationCap, FileCode2, UsersRound, Landmark, Languages } from "lucide-react";
 
 export interface Question {
@@ -6,7 +7,7 @@ export interface Question {
   options: string[];
   correct: string;
   explanation: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty?: 'Easy' | 'Medium' | 'Hard'; // Made optional to support existing question files
 }
 
 export const grade12Subjects = {
