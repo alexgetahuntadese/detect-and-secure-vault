@@ -1,5 +1,14 @@
 import { BrainCircuit, Atom, BookCopy, Lightbulb, Sprout, Globe2, GraduationCap, FileCode2, UsersRound, Landmark, Languages } from "lucide-react";
 
+export interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correct: string;
+  explanation: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+}
+
 export const grade12Subjects = {
   physics: {
     name: 'Physics',
@@ -212,5 +221,20 @@ export const getOtherSubjectsForGrade = (grade: number) => {
       return grade12OtherSubjects;
     default:
       return grade12OtherSubjects;
+  }
+};
+
+// Import questions from various subject files
+import { getGrade11AgricultureQuestions } from './grade11AgricultureQuestions';
+
+export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
+  const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+  
+  switch (subject.toLowerCase()) {
+    case 'agriculture':
+      return getGrade11AgricultureQuestions(chapter, difficultyLevel, count);
+    default:
+      console.warn(`No questions available for subject: ${subject}`);
+      return [];
   }
 };
