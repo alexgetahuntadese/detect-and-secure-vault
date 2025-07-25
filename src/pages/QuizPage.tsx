@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { grade12MathematicsQuestions } from '@/data/grade12Mathematics';
+import { grade12Mathematics } from '@/data/grade12Mathematics';
 import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { grade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
 import { grade12BiologyQuestions } from '@/data/grade12BiologyQuestions';
@@ -30,7 +29,15 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
   
   switch (subject) {
     case 'Mathematics':
-      allQuestions = grade12MathematicsQuestions[chapter] || [];
+      // Handle Mathematics data structure which might be organized by difficulty
+      const mathData = grade12Mathematics[chapter];
+      if (mathData) {
+        if (Array.isArray(mathData)) {
+          allQuestions = mathData;
+        } else if (typeof mathData === 'object' && mathData[difficulty.toLowerCase()]) {
+          allQuestions = mathData[difficulty.toLowerCase()];
+        }
+      }
       break;
     case 'Physics':
       allQuestions = grade12PhysicsQuestions[chapter] || [];
