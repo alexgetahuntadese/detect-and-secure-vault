@@ -29,39 +29,40 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
   
   switch (subject) {
     case 'Mathematics':
-      // Handle Mathematics data structure which might be organized by difficulty
       const mathData = grade12Mathematics[chapter];
-      if (mathData) {
-        if (Array.isArray(mathData)) {
-          allQuestions = mathData;
-        } else if (typeof mathData === 'object' && mathData[difficulty.toLowerCase()]) {
-          allQuestions = mathData[difficulty.toLowerCase()];
-        }
-      }
+      allQuestions = Array.isArray(mathData) ? mathData : [];
       break;
     case 'Physics':
-      allQuestions = grade12PhysicsQuestions[chapter] || [];
+      const physicsData = grade12PhysicsQuestions[chapter];
+      allQuestions = Array.isArray(physicsData) ? physicsData : [];
       break;
     case 'Chemistry':
-      allQuestions = grade12ChemistryQuestions[chapter] || [];
+      const chemData = grade12ChemistryQuestions[chapter];
+      allQuestions = Array.isArray(chemData) ? chemData : [];
       break;
     case 'Biology':
-      allQuestions = grade12BiologyQuestions[chapter] || [];
+      const bioData = grade12BiologyQuestions[chapter];
+      allQuestions = Array.isArray(bioData) ? bioData : [];
       break;
     case 'English':
-      allQuestions = grade12EnglishQuestions[chapter] || [];
+      const engData = grade12EnglishQuestions[chapter];
+      allQuestions = Array.isArray(engData) ? engData : [];
       break;
     case 'Civics':
-      allQuestions = grade12CivicsQuestions[chapter] || [];
+      const civicsData = grade12CivicsQuestions[chapter];
+      allQuestions = Array.isArray(civicsData) ? civicsData : [];
       break;
     case 'History':
-      allQuestions = grade12HistoryQuestions[chapter] || [];
+      const histData = grade12HistoryQuestions[chapter];
+      allQuestions = Array.isArray(histData) ? histData : [];
       break;
     case 'IT':
-      allQuestions = grade12ITQuestions[chapter] || [];
+      const itData = grade12ITQuestions[chapter];
+      allQuestions = Array.isArray(itData) ? itData : [];
       break;
     case 'Agriculture':
-      allQuestions = grade12AgricultureQuestions[chapter] || [];
+      const agriData = grade12AgricultureQuestions[chapter];
+      allQuestions = Array.isArray(agriData) ? agriData : [];
       break;
     case 'Geography':
       return getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
