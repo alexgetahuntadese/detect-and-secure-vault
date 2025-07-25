@@ -62,6 +62,7 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
         allQuestions = Array.isArray(histData) ? histData : [];
         break;
       case 'IT':
+      case 'Information Technology':
         const itData = grade12ITQuestions[chapter];
         allQuestions = Array.isArray(itData) ? itData : [];
         break;
