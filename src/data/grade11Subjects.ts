@@ -1,3 +1,4 @@
+
 export interface Grade11Subject {
   id: string;
   name: string;
@@ -13,16 +14,7 @@ export const grade11Subjects: Grade11Subject[] = [
     name: 'Mathematics',
     icon: 'Calculator',
     description: 'Advanced mathematical concepts including algebra, geometry, and trigonometry',
-    chapters: [
-      'Chapter 1: Relations and Functions',
-      'Chapter 2: Quadratic Functions',
-      'Chapter 3: Exponential and Logarithmic Functions',
-      'Chapter 4: Trigonometric Functions',
-      'Chapter 5: Systems of Linear Equations',
-      'Chapter 6: Sequences and Series',
-      'Chapter 7: Probability and Statistics',
-      'Chapter 8: Coordinate Geometry'
-    ],
+    chapters: [], // Empty - ready for chapters to be added
     category: 'Mathematics'
   },
   {
