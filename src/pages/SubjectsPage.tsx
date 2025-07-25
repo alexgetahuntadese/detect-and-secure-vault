@@ -47,8 +47,11 @@ const SubjectsPage = () => {
           const otherSubs = getOtherSubjectsForGrade(gradeNumber);
           setOtherSubjects(Object.values(otherSubs));
         } else if (gradeNumber === 11) {
-          setSocialScienceSubjects([]);
-          setOtherSubjects([]);
+          const socialSubjects = getSocialScienceSubjectsForGrade(gradeNumber);
+          setSocialScienceSubjects(Object.values(socialSubjects));
+          
+          const otherSubs = getOtherSubjectsForGrade(gradeNumber);
+          setOtherSubjects(Object.values(otherSubs));
         }
       } catch (error) {
         console.error('Error loading subjects:', error);
@@ -156,18 +159,18 @@ const SubjectsPage = () => {
       </div>
 
       {renderSubjectSection(
-        gradeNumber === 11 ? "All Subjects" : "Natural Sciences",
+        "Natural Sciences",
         naturalScienceSubjects,
         "bg-blue-100 text-blue-800"
       )}
 
-      {gradeNumber === 12 && renderSubjectSection(
+      {renderSubjectSection(
         "Social Sciences",
         socialScienceSubjects,
         "bg-green-100 text-green-800"
       )}
 
-      {gradeNumber === 12 && renderSubjectSection(
+      {renderSubjectSection(
         "Other Subjects",
         otherSubjects,
         "bg-purple-100 text-purple-800"
