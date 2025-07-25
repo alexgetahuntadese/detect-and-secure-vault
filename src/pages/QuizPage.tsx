@@ -1,14 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getMathematicsQuestions } from '@/data/grade12Mathematics';
-import { getPhysicsQuestions } from '@/data/grade12PhysicsQuestions';
-import { getChemistryQuestions } from '@/data/grade12ChemistryQuestions';
-import { getBiologyQuestions } from '@/data/grade12BiologyQuestions';
-import { getEnglishQuestions } from '@/data/grade12EnglishQuestions';
-import { getCivicsQuestions } from '@/data/grade12CivicsQuestions';
-import { getHistoryQuestions } from '@/data/grade12HistoryQuestions';
-import { getITQuestions } from '@/data/grade12ITQuestions';
-import { getAgricultureQuestions } from '@/data/grade12AgricultureQuestions';
+import { grade12MathematicsQuestions } from '@/data/grade12Mathematics';
+import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
+import { grade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
+import { grade12BiologyQuestions } from '@/data/grade12BiologyQuestions';
+import { grade12EnglishQuestions } from '@/data/grade12EnglishQuestions';
+import { grade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
+import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
+import { grade12ITQuestions } from '@/data/grade12ITQuestions';
+import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
 import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import QuestionCard from '@/components/QuestionCard';
 import Results from '@/components/Results';
@@ -23,6 +24,65 @@ interface Question {
   explanation: string;
 }
 
+// Helper function to get questions from different subjects
+const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
+  let allQuestions: any[] = [];
+  
+  switch (subject) {
+    case 'Mathematics':
+      allQuestions = grade12MathematicsQuestions[chapter] || [];
+      break;
+    case 'Physics':
+      allQuestions = grade12PhysicsQuestions[chapter] || [];
+      break;
+    case 'Chemistry':
+      allQuestions = grade12ChemistryQuestions[chapter] || [];
+      break;
+    case 'Biology':
+      allQuestions = grade12BiologyQuestions[chapter] || [];
+      break;
+    case 'English':
+      allQuestions = grade12EnglishQuestions[chapter] || [];
+      break;
+    case 'Civics':
+      allQuestions = grade12CivicsQuestions[chapter] || [];
+      break;
+    case 'History':
+      allQuestions = grade12HistoryQuestions[chapter] || [];
+      break;
+    case 'IT':
+      allQuestions = grade12ITQuestions[chapter] || [];
+      break;
+    case 'Agriculture':
+      allQuestions = grade12AgricultureQuestions[chapter] || [];
+      break;
+    case 'Geography':
+      return getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', count);
+    default:
+      return [];
+  }
+
+  // Filter by difficulty if the questions have difficulty property
+  const filteredQuestions = allQuestions.filter(q => {
+    if (q.difficulty) {
+      return q.difficulty.toLowerCase() === difficulty.toLowerCase();
+    }
+    return true; // If no difficulty property, include all questions
+  });
+
+  // Convert to standard Question format and shuffle
+  const convertedQuestions = filteredQuestions.map(q => ({
+    id: q.id,
+    question: q.question,
+    options: q.options,
+    correct: q.correct,
+    explanation: q.explanation
+  }));
+
+  const shuffled = convertedQuestions.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
+
 const QuizPage = () => {
   const [searchParams] = useSearchParams();
   const subject = searchParams.get('subject');
@@ -36,44 +96,12 @@ const QuizPage = () => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+  const initializeQuestions = () => {
     if (subject && chapter && difficulty) {
-      let questions: Question[] = [];
+      const fetchedQuestions = getQuestionsForSubject(subject, chapter, difficulty, 10);
       
-      if (subject === 'Mathematics') {
-        const mathQuestions = getMathematicsQuestions(chapter, difficulty, 10);
-        questions = mathQuestions;
-      } else if (subject === 'Physics') {
-        const physicsQuestions = getPhysicsQuestions(chapter, difficulty, 10);
-        questions = physicsQuestions;
-      } else if (subject === 'Chemistry') {
-        const chemistryQuestions = getChemistryQuestions(chapter, difficulty, 10);
-        questions = chemistryQuestions;
-      } else if (subject === 'Biology') {
-        const biologyQuestions = getBiologyQuestions(chapter, difficulty, 10);
-        questions = biologyQuestions;
-      } else if (subject === 'English') {
-        const englishQuestions = getEnglishQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', 10);
-        questions = englishQuestions;
-      } else if (subject === 'Civics') {
-        const civicsQuestions = getCivicsQuestions(chapter, difficulty, 10);
-        questions = civicsQuestions;
-      } else if (subject === 'History') {
-        const historyQuestions = getHistoryQuestions(chapter, difficulty, 10);
-        questions = historyQuestions;
-      } else if (subject === 'IT') {
-        const itQuestions = getITQuestions(chapter, difficulty, 10);
-        questions = itQuestions;
-      } else if (subject === 'Agriculture') {
-        const agricultureQuestions = getAgricultureQuestions(chapter, difficulty, 10);
-        questions = agricultureQuestions;
-      } else if (subject === 'Geography') {
-        const geographyQuestions = getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', 10);
-        questions = geographyQuestions;
-      }
-
-      if (questions.length > 0) {
-        setQuestions(questions);
+      if (fetchedQuestions.length > 0) {
+        setQuestions(fetchedQuestions);
         setCurrentQuestionIndex(0);
         setSelectedAnswers({});
         setShowResults(false);
@@ -85,6 +113,10 @@ const QuizPage = () => {
         setIsLoading(false);
       }
     }
+  };
+
+  useEffect(() => {
+    initializeQuestions();
   }, [subject, chapter, difficulty]);
 
   useEffect(() => {
@@ -135,50 +167,7 @@ const QuizPage = () => {
   };
 
   const handleRetakeQuiz = () => {
-    if (subject && chapter && difficulty) {
-      let questions: Question[] = [];
-      
-      if (subject === 'Mathematics') {
-        const mathQuestions = getMathematicsQuestions(chapter, difficulty, 10);
-        questions = mathQuestions;
-      } else if (subject === 'Physics') {
-        const physicsQuestions = getPhysicsQuestions(chapter, difficulty, 10);
-        questions = physicsQuestions;
-      } else if (subject === 'Chemistry') {
-        const chemistryQuestions = getChemistryQuestions(chapter, difficulty, 10);
-        questions = chemistryQuestions;
-      } else if (subject === 'Biology') {
-        const biologyQuestions = getBiologyQuestions(chapter, difficulty, 10);
-        questions = biologyQuestions;
-      } else if (subject === 'English') {
-        const englishQuestions = getEnglishQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', 10);
-        questions = englishQuestions;
-      } else if (subject === 'Civics') {
-        const civicsQuestions = getCivicsQuestions(chapter, difficulty, 10);
-        questions = civicsQuestions;
-      } else if (subject === 'History') {
-        const historyQuestions = getHistoryQuestions(chapter, difficulty, 10);
-        questions = historyQuestions;
-      } else if (subject === 'IT') {
-        const itQuestions = getITQuestions(chapter, difficulty, 10);
-        questions = itQuestions;
-      } else if (subject === 'Agriculture') {
-        const agricultureQuestions = getAgricultureQuestions(chapter, difficulty, 10);
-        questions = agricultureQuestions;
-      } else if (subject === 'Geography') {
-        const geographyQuestions = getGrade12GeographyQuestions(chapter, difficulty.toLowerCase() as 'easy' | 'medium' | 'hard', 10);
-        questions = geographyQuestions;
-      }
-
-      if (questions.length > 0) {
-        setQuestions(questions);
-        setCurrentQuestionIndex(0);
-        setSelectedAnswers({});
-        setShowResults(false);
-        setStartTime(Date.now());
-        setElapsedTime(0);
-      }
-    }
+    initializeQuestions();
   };
 
   return (
