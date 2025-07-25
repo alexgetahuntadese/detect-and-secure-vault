@@ -87,18 +87,26 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
   console.log('Filtered questions by difficulty:', filteredQuestions.length);
 
   // Convert to standard Question format and shuffle
-  const convertedQuestions = filteredQuestions.map(q => ({
-    id: q.id || Math.random().toString(36).substr(2, 9),
-    question: q.question,
-    options: q.options,
-    correct: q.correct,
+  const convertedQuestions = filteredQuestions.map((q, index) => ({
+    id: q.id || `question-${index}-${Math.random().toString(36).substr(2, 9)}`,
+    question: q.question || 'Question not available',
+    options: Array.isArray(q.options) ? q.options : [],
+    correct: q.correct || '',
     explanation: q.explanation || "No explanation provided."
   }));
 
-  const shuffled = convertedQuestions.sort(() => Math.random() - 0.5);
+  // Filter out questions with invalid data
+  const validQuestions = convertedQuestions.filter(q => 
+    q.question !== 'Question not available' && 
+    q.options.length > 0 && 
+    q.correct
+  );
+
+  const shuffled = validQuestions.sort(() => Math.random() - 0.5);
   const finalQuestions = shuffled.slice(0, count);
   
   console.log('Final questions to return:', finalQuestions.length);
+  console.log('Sample question:', finalQuestions[0]);
   return finalQuestions;
 };
 
@@ -107,6 +115,7 @@ const QuizPage = () => {
   const subject = params.subject;
   const chapterId = params.chapterId ? decodeURIComponent(params.chapterId) : null;
   const difficulty = params.difficulty;
+  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
@@ -129,16 +138,15 @@ const QuizPage = () => {
         setShowResults(false);
         setStartTime(Date.now());
         setElapsedTime(0);
-        setIsLoading(false);
       } else {
         console.error('No questions found for:', { subject, chapter: chapterId, difficulty });
         setQuestions([]);
-        setIsLoading(false);
       }
     } else {
       console.error('Missing required parameters:', { subject, chapterId, difficulty });
-      setIsLoading(false);
+      setQuestions([]);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -148,20 +156,22 @@ const QuizPage = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (!showResults && !isLoading && startTime > 0) {
+    if (!showResults && !isLoading && startTime > 0 && questions.length > 0) {
       intervalId = setInterval(() => {
         setElapsedTime(Date.now() - startTime);
       }, 10);
     }
 
     return () => clearInterval(intervalId);
-  }, [showResults, startTime, isLoading]);
+  }, [showResults, startTime, isLoading, questions.length]);
 
   const handleAnswerSelect = (answer: string) => {
+    console.log('Answer selected:', answer, 'for question index:', currentQuestionIndex);
     setSelectedAnswers({ ...selectedAnswers, [currentQuestionIndex]: answer });
   };
 
   const handleNextQuestion = () => {
+    console.log('Next question clicked, current index:', currentQuestionIndex, 'total:', questions.length);
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -235,6 +245,19 @@ const QuizPage = () => {
     );
   }
 
+  const currentQuestion = questions[currentQuestionIndex];
+
+  if (!currentQuestion) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-2xl font-semibold mb-4 text-white">
+          Quiz Error
+        </h2>
+        <p className="text-white">Unable to load the current question. Please try refreshing the page.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4 text-white">
@@ -250,23 +273,32 @@ const QuizPage = () => {
           selectedAnswers={selectedAnswers}
         />
       ) : (
-        <>
-          <p className="text-gray-500 mb-2">
-            Time Elapsed: <span className="font-bold">{formatTime(elapsedTime)}</span>
+        <div className="space-y-6">
+          <p className="text-gray-300 mb-2">
+            Time Elapsed: <span className="font-bold text-white">{formatTime(elapsedTime)}</span>
           </p>
-          {questions.length > 0 && (
-            <QuestionCard
-              question={questions[currentQuestionIndex]}
-              selectedAnswer={selectedAnswers[currentQuestionIndex]}
-              onAnswerSelect={handleAnswerSelect}
-              questionNumber={currentQuestionIndex + 1}
-              totalQuestions={questions.length}
-            />
-          )}
-          <Button onClick={handleNextQuestion} disabled={!selectedAnswers[currentQuestionIndex]}>
-            {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'}
-          </Button>
-        </>
+          
+          <QuestionCard
+            question={currentQuestion}
+            selectedAnswer={selectedAnswers[currentQuestionIndex]}
+            onAnswerSelect={handleAnswerSelect}
+            questionNumber={currentQuestionIndex + 1}
+            totalQuestions={questions.length}
+          />
+          
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-400">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
+            <Button 
+              onClick={handleNextQuestion} 
+              disabled={!selectedAnswers[currentQuestionIndex]}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'}
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
