@@ -1,3 +1,4 @@
+
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,88 +45,112 @@ const SubjectsPage = () => {
     'Information Technology': Monitor,
   };
 
-  const subjects = [
-    {
-      name: 'Mathematics',
-      description: 'Numbers, algebra, geometry, and problem solving',
-      chapters: 12,
-      estimatedTime: '45 hours',
-      difficulty: 'Advanced',
-      icon: subjectIcons.Mathematics,
-    },
-    {
-      name: 'Physics',
-      description: 'Motion, forces, energy, and natural phenomena',
-      chapters: 5,
-      estimatedTime: '40 hours',
-      difficulty: 'Advanced',
-      icon: subjectIcons.Physics,
-    },
-    {
-      name: 'Chemistry',
-      description: 'Atoms, molecules, reactions, and materials',
-      chapters: 9,
-      estimatedTime: '35 hours',
-      difficulty: 'Advanced',
-      icon: subjectIcons.Chemistry,
-    },
-    {
-      name: 'Biology',
-      description: 'Living organisms, ecosystems, and life processes',
-      chapters: 11,
-      estimatedTime: '38 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons.Biology,
-    },
-    {
-      name: 'English',
-      description: 'Reading, writing, grammar, and literature',
-      chapters: 8,
-      estimatedTime: '30 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons.English,
-    },
-    {
-      name: 'Geography',
-      description: 'Earth science, maps, climate, and human geography',
-      chapters: 7,
-      estimatedTime: '25 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons.Geography,
-    },
-    {
-      name: 'History',
-      description: 'Ethiopian and world history, civilizations, and cultural heritage',
-      chapters: 9,
-      estimatedTime: '32 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons.History,
-    },
-    {
-      name: 'Civic Education',
-      description: 'Democracy, rights, responsibilities, justice, and ethical citizenship',
-      chapters: 11,
-      estimatedTime: '35 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons['Civic Education'],
-    },
-    {
-      name: 'Agriculture',
-      description: 'Crop production, livestock, soil science, and sustainable farming',
-      chapters: 6,
-      estimatedTime: '40 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons.Agriculture,
-    },
-    {
-      name: 'Information Technology',
-      description: 'Computer systems, programming, databases, web development, and emerging technologies',
-      chapters: 6,
-      estimatedTime: '42 hours',
-      difficulty: 'Intermediate',
-      icon: subjectIcons['Information Technology'],
-    },
-  ];
+  // Grade-specific subjects configuration
+  const getSubjectsForGrade = (gradeNum: string) => {
+    const baseSubjects = [
+      {
+        name: 'Mathematics',
+        description: 'Numbers, algebra, geometry, and problem solving',
+        chapters: 12,
+        estimatedTime: '45 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Mathematics,
+      },
+      {
+        name: 'Physics',
+        description: 'Motion, forces, energy, and natural phenomena',
+        chapters: 5,
+        estimatedTime: '40 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Physics,
+      },
+      {
+        name: 'Chemistry',
+        description: 'Atoms, molecules, reactions, and materials',
+        chapters: 9,
+        estimatedTime: '35 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Chemistry,
+      },
+      {
+        name: 'Biology',
+        description: 'Living organisms, ecosystems, and life processes',
+        chapters: 11,
+        estimatedTime: '38 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Biology,
+      },
+      {
+        name: 'English',
+        description: 'Reading, writing, grammar, and literature',
+        chapters: 8,
+        estimatedTime: '30 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.English,
+      },
+      {
+        name: 'Geography',
+        description: 'Earth science, maps, climate, and human geography',
+        chapters: 7,
+        estimatedTime: '25 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Geography,
+      },
+      {
+        name: 'History',
+        description: 'Ethiopian and world history, civilizations, and cultural heritage',
+        chapters: 9,
+        estimatedTime: '32 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.History,
+      },
+      {
+        name: 'Civic Education',
+        description: 'Democracy, rights, responsibilities, justice, and ethical citizenship',
+        chapters: 11,
+        estimatedTime: '35 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons['Civic Education'],
+      },
+    ];
+
+    // Add grade-specific subjects
+    if (gradeNum === '11') {
+      baseSubjects.push({
+        name: 'Agriculture',
+        description: 'Crop production, livestock management, natural resources, and sustainable farming practices',
+        chapters: 16,
+        estimatedTime: '50 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Agriculture,
+      });
+    }
+
+    if (gradeNum === '12') {
+      baseSubjects.push(
+        {
+          name: 'Agriculture',
+          description: 'Crop production, livestock, soil science, and sustainable farming',
+          chapters: 6,
+          estimatedTime: '40 hours',
+          difficulty: 'Intermediate',
+          icon: subjectIcons.Agriculture,
+        },
+        {
+          name: 'Information Technology',
+          description: 'Computer systems, programming, databases, web development, and emerging technologies',
+          chapters: 6,
+          estimatedTime: '42 hours',
+          difficulty: 'Intermediate',
+          icon: subjectIcons['Information Technology'],
+        }
+      );
+    }
+
+    return baseSubjects;
+  };
+
+  const subjects = getSubjectsForGrade(grade || '12');
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

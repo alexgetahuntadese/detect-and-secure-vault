@@ -5,6 +5,7 @@ import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade
 import { grade12HistoryQuestions, getGrade12HistoryQuestions } from './grade12HistoryQuestions';
 import { grade12CivicsQuestions, getGrade12CivicsQuestions } from './grade12CivicsQuestions';
 import { grade12ITQuestions, getGrade12ITQuestions } from './grade12ITQuestions';
+import { grade11AgricultureQuestions, getGrade11AgricultureQuestions } from './grade11AgricultureQuestions';
 
 export interface Question {
   id: string;
@@ -273,9 +274,66 @@ const grade11TechnicalDrawingQuestions: { [chapter: string]: Question[] } = {
   ]
 };
 
+const grade11AgricultureChapters = [
+  'Chapter 1: Introduction to Crop Production',
+  'Chapter 2: Field Crops Production and Management', 
+  'Chapter 3: Industrial Crops Production and Management',
+  'Chapter 4: Introduction to Farm Animals',
+  'Chapter 5: Animal Feeds and Feeding Practices',
+  'Chapter 6: Animal Genetics and Breeding Practices',
+  'Chapter 7: Farm Animals Housing',
+  'Chapter 8: Basic Animal Health and Disease Control',
+  'Chapter 9: Dairy Cattle Production and Management',
+  'Chapter 10: Introduction to Natural Resources',
+  'Chapter 11: Management of Natural Resources',
+  'Chapter 12: Concepts of Biodiversity',
+  'Chapter 13: Climate Change Adaptation and Mitigation',
+  'Chapter 14: Mechanized Farming',
+  'Chapter 15: Introduction to Human Nutrition',
+  'Chapter 16: Diversified Food Production and Consumption'
+];
+
 export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 15) => {
   console.log('Getting questions for:', { subject, chapter, difficulty, count });
   
+  // Handle Grade 11 Agriculture questions
+  if (subject.toLowerCase() === 'agriculture' && chapter.includes('Chapter')) {
+    console.log('Processing Grade 11 Agriculture for chapter:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade11AgricultureQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 11 Agriculture questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    // If no specific questions found, return sample questions for all agriculture chapters
+    const sampleQuestions: Question[] = grade11AgricultureChapters.map((chapterName, index) => ({
+      id: `agr11_${index + 1}`,
+      question: `What is the main focus of ${chapterName.replace('Chapter ' + (index + 1) + ': ', '')}?`,
+      options: [
+        `Understanding ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}`,
+        'General farming',
+        'Animal care only',
+        'Soil testing'
+      ],
+      correct: `Understanding ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}`,
+      explanation: `This chapter focuses on the principles and practices of ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}.`
+    }));
+    
+    return sampleQuestions.slice(0, count);
+  }
+
   // Handle Grade 12 Biology questions
   if (subject.toLowerCase() === 'biology' && chapter.includes('Unit')) {
     console.log('Processing Grade 12 Biology for chapter:', chapter);
