@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
 import { grade12PhysicsQuestions } from '@/data/grade12PhysicsQuestions';
 import { grade12ChemistryQuestions } from '@/data/grade12ChemistryQuestions';
@@ -92,10 +92,10 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
 };
 
 const QuizPage = () => {
-  const [searchParams] = useSearchParams();
-  const subject = searchParams.get('subject');
-  const chapter = searchParams.get('chapter');
-  const difficulty = searchParams.get('difficulty');
+  const params = useParams();
+  const subject = params.subject;
+  const chapterId = params.chapterId ? decodeURIComponent(params.chapterId) : null;
+  const difficulty = params.difficulty;
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
@@ -105,8 +105,8 @@ const QuizPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const initializeQuestions = () => {
-    if (subject && chapter && difficulty) {
-      const fetchedQuestions = getQuestionsForSubject(subject, chapter, difficulty, 10);
+    if (subject && chapterId && difficulty) {
+      const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10);
       
       if (fetchedQuestions.length > 0) {
         setQuestions(fetchedQuestions);
@@ -117,7 +117,7 @@ const QuizPage = () => {
         setElapsedTime(0);
         setIsLoading(false);
       } else {
-        console.log('No questions found for:', { subject, chapter, difficulty });
+        console.log('No questions found for:', { subject, chapter: chapterId, difficulty });
         setIsLoading(false);
       }
     }
@@ -125,7 +125,7 @@ const QuizPage = () => {
 
   useEffect(() => {
     initializeQuestions();
-  }, [subject, chapter, difficulty]);
+  }, [subject, chapterId, difficulty]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -181,7 +181,7 @@ const QuizPage = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4 text-white">
-        {subject} - {chapter} ({difficulty})
+        {subject} - {chapterId} ({difficulty})
       </h2>
       {isLoading ? (
         <div className="space-y-4">
