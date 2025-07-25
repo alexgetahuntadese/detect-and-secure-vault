@@ -19,6 +19,17 @@ import {
   Languages
 } from 'lucide-react';
 
+export interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correct: string;
+  explanation: string;
+  difficulty: string;
+  chapter: string;
+  subject: string;
+}
+
 interface Subject {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -433,6 +444,33 @@ export const getOtherSubjectsForGrade = (grade: number) => {
     return grade11OtherSubjects;
   }
   return {};
+};
+
+// Sample questions generator function
+export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
+  // This is a placeholder function that generates sample questions
+  // In a real implementation, this would fetch from a database or static files
+  const sampleQuestions: Question[] = [];
+  
+  for (let i = 1; i <= count; i++) {
+    sampleQuestions.push({
+      id: `${subject}-${chapter}-${difficulty}-${i}`,
+      question: `Sample ${difficulty} question ${i} for ${subject} - ${chapter}`,
+      options: [
+        'Option A - Correct answer',
+        'Option B - Incorrect answer',
+        'Option C - Incorrect answer',
+        'Option D - Incorrect answer'
+      ],
+      correct: 'Option A - Correct answer',
+      explanation: `This is the explanation for question ${i} in ${subject} - ${chapter}`,
+      difficulty: difficulty,
+      chapter: chapter,
+      subject: subject
+    });
+  }
+  
+  return sampleQuestions;
 };
 
 // Sample questions (can be expanded)
