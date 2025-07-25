@@ -14,7 +14,7 @@ import QuestionCard from '@/components/QuestionCard';
 import Results from '@/components/Results';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye } from 'lucide-react';
 
 interface Question {
   id: string;
@@ -134,6 +134,8 @@ const QuizPage = () => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAnswerForQuestion, setShowAnswerForQuestion] = useState<number | null>(null);
+  const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
 
   const initializeQuestions = () => {
     console.log('Initializing questions with params:', { subject, chapterId, difficulty, grade });
@@ -193,8 +195,16 @@ const QuizPage = () => {
     setSelectedAnswers({ ...selectedAnswers, [currentQuestionIndex]: answer });
   };
 
+  const handleShowAnswer = () => {
+    console.log('Show answer clicked for question index:', currentQuestionIndex);
+    setShowAnswerForQuestion(currentQuestionIndex);
+    setRevealedAnswers(prev => new Set([...prev, currentQuestionIndex]));
+  };
+
   const handleNextQuestion = () => {
     console.log('Next question clicked, current index:', currentQuestionIndex, 'total:', questions.length);
+    setShowAnswerForQuestion(null); // Hide explanation when moving to next question
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -222,6 +232,8 @@ const QuizPage = () => {
   };
 
   const handleRetakeQuiz = () => {
+    setShowAnswerForQuestion(null);
+    setRevealedAnswers(new Set());
     initializeQuestions();
   };
 
@@ -421,19 +433,33 @@ const QuizPage = () => {
             onAnswerSelect={handleAnswerSelect}
             questionNumber={currentQuestionIndex + 1}
             totalQuestions={questions.length}
+            showAnswer={showAnswerForQuestion === currentQuestionIndex}
+            userAnswer={selectedAnswers[currentQuestionIndex]}
           />
           
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-400">
               Question {currentQuestionIndex + 1} of {questions.length}
             </div>
-            <Button 
-              onClick={handleNextQuestion} 
-              disabled={!selectedAnswers[currentQuestionIndex]}
-              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-            >
-              {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'}
-            </Button>
+            <div className="flex gap-3">
+              {!revealedAnswers.has(currentQuestionIndex) && (
+                <Button
+                  onClick={handleShowAnswer}
+                  variant="outline"
+                  className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  Show Answer
+                </Button>
+              )}
+              <Button 
+                onClick={handleNextQuestion} 
+                disabled={!selectedAnswers[currentQuestionIndex]}
+                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+              >
+                {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'}
+              </Button>
+            </div>
           </div>
         </div>
       )}
