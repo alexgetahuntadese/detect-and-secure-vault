@@ -1,180 +1,250 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getSubjectsForGrade, getSocialScienceSubjectsForGrade, getOtherSubjectsForGrade } from '@/data/naturalScienceQuizzes';
-import SubjectCard from '@/components/SubjectCard';
-import { Button } from "@/components/ui/button";
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft } from 'lucide-react';
-import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, BookOpen, Clock, Target } from 'lucide-react';
+import { 
+  Calculator, 
+  Atom, 
+  Globe, 
+  Book, 
+  Palette, 
+  Music, 
+  Heart, 
+  Zap,
+  TreePine,
+  Languages,
+  Users,
+  Briefcase,
+  Wheat,
+  ScrollText,
+  Monitor
+} from 'lucide-react';
 
 const SubjectsPage = () => {
-  const { grade } = useParams();
   const navigate = useNavigate();
-  const [naturalScienceSubjects, setNaturalScienceSubjects] = useState<any[]>([]);
-  const [socialScienceSubjects, setSocialScienceSubjects] = useState<any[]>([]);
-  const [otherSubjects, setOtherSubjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const gradeNumber = parseInt(grade || '12', 10);
+  const { grade } = useParams();
 
-  const handleBack = () => {
-    navigate(-1);
+  const subjectIcons = {
+    'Mathematics': Calculator,
+    'Physics': Atom,
+    'Chemistry': Zap,
+    'Biology': TreePine,
+    'Geography': Globe,
+    'History': ScrollText,
+    'English': Languages,
+    'Amharic': Book,
+    'Art': Palette,
+    'Music': Music,
+    'Physical Education': Heart,
+    'Civic Education': Users,
+    'Economics': Briefcase,
+    'General Science': Atom,
+    'Agriculture': Wheat,
+    'Information Technology': Monitor,
   };
 
-  const handleSelectQuiz = (quiz: any) => {
-    console.log('Quiz selected:', quiz);
-  };
+  // Grade-specific subjects configuration
+  const getSubjectsForGrade = (gradeNum: string) => {
+    const baseSubjects = [
+      {
+        name: 'Mathematics',
+        description: 'Numbers, algebra, geometry, and problem solving',
+        chapters: 12,
+        estimatedTime: '45 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Mathematics,
+      },
+      {
+        name: 'Physics',
+        description: 'Motion, forces, energy, and natural phenomena',
+        chapters: 5,
+        estimatedTime: '40 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Physics,
+      },
+      {
+        name: 'Chemistry',
+        description: 'Atoms, molecules, reactions, and materials',
+        chapters: 9,
+        estimatedTime: '35 hours',
+        difficulty: 'Advanced',
+        icon: subjectIcons.Chemistry,
+      },
+      {
+        name: 'Biology',
+        description: 'Living organisms, ecosystems, and life processes',
+        chapters: 11,
+        estimatedTime: '38 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Biology,
+      },
+      {
+        name: 'English',
+        description: 'Reading, writing, grammar, and literature',
+        chapters: 8,
+        estimatedTime: '30 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.English,
+      },
+      {
+        name: 'Geography',
+        description: 'Earth science, maps, climate, and human geography',
+        chapters: 7,
+        estimatedTime: '25 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Geography,
+      },
+      {
+        name: 'History',
+        description: 'Ethiopian and world history, civilizations, and cultural heritage',
+        chapters: 9,
+        estimatedTime: '32 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.History,
+      },
+      {
+        name: 'Civic Education',
+        description: 'Democracy, rights, responsibilities, justice, and ethical citizenship',
+        chapters: 11,
+        estimatedTime: '35 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons['Civic Education'],
+      },
+    ];
 
-  // Mock progress data for demonstration
-  const getMockProgress = () => ({
-    completed: Math.floor(Math.random() * 10),
-    total: 10,
-    percentage: Math.floor(Math.random() * 100)
-  });
+    // Add grade-specific subjects
+    if (gradeNum === '11') {
+      baseSubjects.push({
+        name: 'Agriculture',
+        description: 'Crop production, livestock management, natural resources, and sustainable farming practices',
+        chapters: 16,
+        estimatedTime: '50 hours',
+        difficulty: 'Intermediate',
+        icon: subjectIcons.Agriculture,
+      });
+    }
 
-  useEffect(() => {
-    const loadSubjects = () => {
-      setLoading(true);
-      try {
-        const naturalSubjects = getSubjectsForGrade(gradeNumber);
-        setNaturalScienceSubjects(Object.values(naturalSubjects));
-
-        if (gradeNumber === 12) {
-          const socialSubjects = getSocialScienceSubjectsForGrade(gradeNumber);
-          setSocialScienceSubjects(Object.values(socialSubjects));
-          
-          const otherSubs = getOtherSubjectsForGrade(gradeNumber);
-          setOtherSubjects(Object.values(otherSubs));
-        } else if (gradeNumber === 11) {
-          const socialSubjects = getSocialScienceSubjectsForGrade(gradeNumber);
-          setSocialScienceSubjects(Object.values(socialSubjects));
-          
-          const otherSubs = getOtherSubjectsForGrade(gradeNumber);
-          setOtherSubjects(Object.values(otherSubs));
+    if (gradeNum === '12') {
+      baseSubjects.push(
+        {
+          name: 'Agriculture',
+          description: 'Crop production, livestock, soil science, and sustainable farming',
+          chapters: 6,
+          estimatedTime: '40 hours',
+          difficulty: 'Intermediate',
+          icon: subjectIcons.Agriculture,
+        },
+        {
+          name: 'Information Technology',
+          description: 'Computer systems, programming, databases, web development, and emerging technologies',
+          chapters: 6,
+          estimatedTime: '42 hours',
+          difficulty: 'Intermediate',
+          icon: subjectIcons['Information Technology'],
         }
-      } catch (error) {
-        console.error('Error loading subjects:', error);
-        setError(`Failed to load Grade ${gradeNumber} subjects`);
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
+    }
 
-    loadSubjects();
-  }, [gradeNumber]);
+    return baseSubjects;
+  };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
-        <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            className="text-white hover:bg-slate-800 mr-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <h2 className="text-2xl font-semibold text-white">
-            Loading Grade {gradeNumber} Subjects...
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-48 bg-slate-700" />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const subjects = getSubjectsForGrade(grade || '12');
 
-  if (error) {
-    return (
-      <div className="container mx-auto p-4 min-h-screen bg-slate-900">
-        <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            className="text-white hover:bg-slate-800 mr-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <h2 className="text-2xl font-semibold text-white">
-            Error Loading Subjects
-          </h2>
-        </div>
-        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6">
-          <p className="text-red-400 text-lg mb-4">{error}</p>
-          <Button onClick={handleBack} className="bg-blue-600 hover:bg-blue-700 text-white">
-            Go Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Advanced': return 'bg-red-500 text-white';
+      case 'Intermediate': return 'bg-yellow-500 text-black';
+      case 'Beginner': return 'bg-green-500 text-white';
+      default: return 'bg-gray-500 text-white';
+    }
+  };
 
-  const renderSubjectSection = (title: string, subjects: any[], badgeColor: string) => {
-    if (subjects.length === 0) return null;
-
-    return (
-      <div className="mb-8">
-        <div className="flex items-center mb-6">
-          <h2 className="text-2xl font-semibold text-white">{title}</h2>
-          <Badge variant="secondary" className={`ml-3 ${badgeColor}`}>
-            {subjects.length} subjects
-          </Badge>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjects.map((subject, index) => (
-            <SubjectCard
-              key={index}
-              subject={subject}
-              progress={getMockProgress()}
-              grade={gradeNumber}
-              onSelectQuiz={handleSelectQuiz}
-            />
-          ))}
-        </div>
-      </div>
-    );
+  const handleSubjectSelect = (subjectName: string) => {
+    navigate(`/grade/${grade}/subject/${encodeURIComponent(subjectName)}/chapters`);
   };
 
   return (
-    <div className="container mx-auto p-4 min-h-screen bg-slate-900">
-      <div className="flex items-center mb-6">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          className="text-white hover:bg-slate-800 mr-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <h1 className="text-3xl font-semibold text-white">
-          Grade {gradeNumber} Subjects
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center mb-8">
+          <Button 
+            variant="ghost" 
+            className="text-white hover:bg-white/20 mr-4"
+            onClick={() => navigate('/grades')}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Grades
+          </Button>
+        </div>
+
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-white mb-4">
+            Grade {grade} Subjects
+          </h1>
+          <p className="text-xl text-blue-200">
+            Choose a subject to explore chapters and start learning
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subjects.map((subject) => {
+            const IconComponent = subject.icon;
+            return (
+              <Card 
+                key={subject.name}
+                className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+                onClick={() => handleSubjectSelect(subject.name)}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-3 rounded-lg bg-blue-500 group-hover:bg-blue-400 transition-colors">
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-xl">
+                          {subject.name}
+                        </CardTitle>
+                        <Badge className={getDifficultyColor(subject.difficulty)}>
+                          {subject.difficulty}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <CardDescription className="text-blue-200 mt-2">
+                    {subject.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-300">
+                    <div className="flex items-center">
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      <span>{subject.chapters} chapters</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4" />
+                      <span>{subject.estimatedTime}</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSubjectSelect(subject.name);
+                    }}
+                  >
+                    Explore Chapters
+                    <Target className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
-
-      {renderSubjectSection(
-        "Natural Sciences",
-        naturalScienceSubjects,
-        "bg-blue-100 text-blue-800"
-      )}
-
-      {renderSubjectSection(
-        "Social Sciences",
-        socialScienceSubjects,
-        "bg-green-100 text-green-800"
-      )}
-
-      {renderSubjectSection(
-        "Other Subjects",
-        otherSubjects,
-        "bg-purple-100 text-purple-800"
-      )}
     </div>
   );
 };

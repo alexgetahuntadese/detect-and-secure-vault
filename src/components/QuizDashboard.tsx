@@ -37,6 +37,7 @@ import {
   Laptop,
   Languages
 } from 'lucide-react';
+import SubjectSection from './SubjectSection';
 import SubjectCard from './SubjectCard';
 import { useIsMobile } from '../hooks/useIsMobile';
 
@@ -493,6 +494,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={11}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -514,6 +516,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={11}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -535,6 +538,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={11}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -577,6 +581,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={12}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -598,6 +603,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={12}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>
@@ -619,6 +625,7 @@ const QuizDashboard = ({ user, onLogout, onSelectQuiz }: QuizDashboardProps) => 
                 progress={getSubjectProgress(subject.name)}
                 grade={12}
                 onSelectQuiz={onSelectQuiz}
+                isMobile={isMobile}
               />
             ))}
           </div>

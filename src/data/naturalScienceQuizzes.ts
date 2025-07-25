@@ -1,492 +1,557 @@
-import {
-  Calculator,
-  Microscope,
-  Globe,
-  Users,
-  Atom,
-  Dna,
-  FlaskConical,
-  Zap,
-  Ruler,
-  MapPin,
-  Clock8,
-  DollarSign,
-  Briefcase,
-  BookA,
-  Scale,
-  Activity,
-  Laptop,
-  Languages
-} from 'lucide-react';
+import { grade12BiologyQuestions, getGrade12BiologyQuestions } from './grade12BiologyQuestions';
+import { grade12ChemistryQuestions, getGrade12ChemistryQuestions } from './grade12ChemistryQuestions';
+import { grade12EnglishQuestions } from './grade12EnglishQuestions';
+import { grade12GeographyQuestions, getGrade12GeographyQuestions } from './grade12GeographyQuestions';
+import { grade12HistoryQuestions, getGrade12HistoryQuestions } from './grade12HistoryQuestions';
+import { grade12CivicsQuestions, getGrade12CivicsQuestions } from './grade12CivicsQuestions';
+import { grade12ITQuestions, getGrade12ITQuestions } from './grade12ITQuestions';
+import { grade11AgricultureQuestions, getGrade11AgricultureQuestions } from './grade11AgricultureQuestions';
 
 export interface Question {
   id: string;
   question: string;
   options: string[];
   correct: string;
-  explanation: string;
-  difficulty: string;
-  chapter: string;
+  explanation?: string;
+}
+
+interface Quiz {
+  id: number;
+  title: string;
   subject: string;
+  difficulty: string;
+  duration: number;
+  questions: number;
+  completed: boolean;
+  score: number | null;
 }
 
-interface Subject {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  chapters: string[];
-}
-
-interface Subjects {
-  [key: string]: Subject;
-}
-
-// Grade 12 Natural Science subjects
-const grade12NaturalScienceSubjects: Subjects = {
-  biology: {
-    name: 'Biology',
-    icon: Dna,
-    chapters: [
-      'Unit 1: Application of Biology',
-      'Unit 2: Microorganisms',
-      'Unit 3: Energy transformation',
-      'Unit 4: Evolution',
-      'Unit 5: Human Body System',
-      'Unit 6: Climate Change'
-    ]
+const biologyQuizzes: Quiz[] = [
+  {
+    id: 101,
+    title: 'Cell Biology Basics',
+    subject: 'biology',
+    difficulty: 'Easy',
+    duration: 20,
+    questions: 15,
+    completed: true,
+    score: 75
   },
-  chemistry: {
-    name: 'Chemistry',
-    icon: FlaskConical,
-    chapters: [
-      'Chapter 1: Atomic Structure and Periodic Properties',
-      'Chapter 2: Chemical Bonding',
-      'Chapter 3: States of Matter',
-      'Chapter 4: Solutions',
-      'Chapter 5: Chemical Kinetics',
-      'Chapter 6: Chemical Equilibrium',
-      'Chapter 7: Acids and Bases',
-      'Chapter 8: Redox Reactions and Electrochemistry',
-      'Chapter 9: Organic Chemistry'
-    ]
-  },
-  physics: {
-    name: 'Physics',
-    icon: Zap,
-    chapters: [
-      'Chapter 1: Mechanics',
-      'Chapter 2: Thermal Physics',
-      'Chapter 3: Oscillations and Waves',
-      'Chapter 4: Electricity and Magnetism',
-      'Chapter 5: Electromagnetic Induction',
-      'Chapter 6: Alternating Current',
-      'Chapter 7: Electromagnetic Waves',
-      'Chapter 8: Optics',
-      'Chapter 9: Modern Physics'
-    ]
-  },
-  technicalDrawing: {
-    name: 'Technical Drawing',
-    icon: Ruler,
-    chapters: [
-      'Chapter 1: Introduction to Technical Drawing',
-      'Chapter 2: Geometric Construction',
-      'Chapter 3: Orthographic Projection',
-      'Chapter 4: Isometric Drawing',
-      'Chapter 5: Sectional Views',
-      'Chapter 6: Working Drawings',
-      'Chapter 7: Computer-Aided Design (CAD)'
-    ]
-  },
-  agriculture: {
-    name: 'Agriculture',
-    icon: Microscope,
-    chapters: [
-      'Unit 1: Crop Production',
-      'Unit 2: Livestock Management',
-      'Unit 3: Soil Science and Fertility',
-      'Unit 4: Agricultural Economics',
-      'Unit 5: Agricultural Technology',
-      'Unit 6: Sustainable Agriculture'
-    ]
+  {
+    id: 102,
+    title: 'Genetics Fundamentals',
+    subject: 'biology',
+    difficulty: 'Medium',
+    duration: 30,
+    questions: 20,
+    completed: false,
+    score: null
   }
+];
+
+const physicsQuizzes: Quiz[] = [
+  {
+    id: 201,
+    title: 'Motion and Forces',
+    subject: 'physics',
+    difficulty: 'Medium',
+    duration: 30,
+    questions: 20,
+    completed: false,
+    score: null
+  },
+  {
+    id: 202,
+    title: 'Energy and Momentum',
+    subject: 'physics',
+    difficulty: 'Hard',
+    duration: 45,
+    questions: 25,
+    completed: true,
+    score: 88
+  }
+];
+
+const chemistryQuizzes: Quiz[] = [
+  {
+    id: 301,
+    title: 'Atomic Structure',
+    subject: 'chemistry',
+    difficulty: 'Easy',
+    duration: 25,
+    questions: 18,
+    completed: false,
+    score: null
+  },
+  {
+    id: 302,
+    title: 'Chemical Reactions',
+    subject: 'chemistry',
+    difficulty: 'Medium',
+    duration: 35,
+    questions: 22,
+    completed: true,
+    score: 92
+  }
+];
+
+const technicalDrawingQuizzes: Quiz[] = [
+  {
+    id: 401,
+    title: 'Basic Drawing Principles',
+    subject: 'technical drawing',
+    difficulty: 'Easy',
+    duration: 20,
+    questions: 15,
+    completed: true,
+    score: 80
+  },
+  {
+    id: 402,
+    title: 'Advanced Projection Techniques',
+    subject: 'technical drawing',
+    difficulty: 'Hard',
+    duration: 40,
+    questions: 25,
+    completed: false,
+    score: null
+  }
+];
+
+const grade11BiologyQuestions: { [chapter: string]: Question[] } = {
+  'Cell Biology': [
+    {
+      id: '11bio_cell_e1',
+      question: 'What is the basic unit of life?',
+      options: ['Cell', 'Tissue', 'Organ', 'System'],
+      correct: 'Cell',
+      explanation: 'The cell is the basic structural and functional unit of all known living organisms.'
+    },
+  ],
+  'Genetics': [
+    {
+      id: '11bio_gen_m1',
+      question: 'What is a gene?',
+      options: ['A unit of heredity', 'A type of protein', 'A cell organelle', 'A type of carbohydrate'],
+      correct: 'A unit of heredity',
+      explanation: 'A gene is a unit of heredity that is transferred from a parent to offspring and determines some characteristic of the offspring.'
+    },
+  ],
+  'Ecology': [
+    {
+      id: '11bio_eco_h1',
+      question: 'What is an ecosystem?',
+      options: ['A community of living organisms and their physical environment', 'A single species in a habitat', 'The Earth', 'A collection of cells'],
+      correct: 'A community of living organisms and their physical environment',
+      explanation: 'An ecosystem includes all of the living things (plants, animals and organisms) in a given area, interacting with each other, and also with their non-living environments (weather, earth, sun, soil, climate, atmosphere).'
+    },
+  ],
+  'Human Biology': [
+    {
+      id: '11bio_hum_e1',
+      question: 'What is the function of the heart?',
+      options: ['To pump blood', 'To digest food', 'To filter air', 'To produce hormones'],
+      correct: 'To pump blood',
+      explanation: 'The heart is a muscular organ that pumps blood through the blood vessels by repeated, rhythmic contractions.'
+    },
+  ]
 };
 
-// Grade 12 Social Science subjects
-const grade12SocialScienceSubjects: Subjects = {
-  geography: {
-    name: 'Geography',
-    icon: MapPin,
-    chapters: [
-      'Chapter 1: Physical Geography of the World',
-      'Chapter 2: Population and Settlement',
-      'Chapter 3: Economic Geography',
-      'Chapter 4: Political Geography',
-      'Chapter 5: Environmental Geography',
-      'Chapter 6: Regional Geography of Africa',
-      'Chapter 7: Geography of Ethiopia and the Horn',
-      'Chapter 8: Geographic Information Systems (GIS)'
-    ]
-  },
-  history: {
-    name: 'History',
-    icon: Clock8,
-    chapters: [
-      'Chapter 1: The Ancient World',
-      'Chapter 2: Medieval Period',
-      'Chapter 3: The Modern World (1500-1800)',
-      'Chapter 4: Age of Revolution and Nationalism',
-      'Chapter 5: The 20th Century World',
-      'Chapter 6: Contemporary World',
-      'Chapter 7: African History',
-      'Chapter 8: Ethiopian History'
-    ]
-  },
-  economics: {
-    name: 'Economics',
-    icon: DollarSign,
-    chapters: [
-      'Chapter 1: Introduction to Economics',
-      'Chapter 2: Demand, Supply and Market Equilibrium',
-      'Chapter 3: Consumer Behavior and Demand Analysis',
-      'Chapter 4: Production and Cost Analysis',
-      'Chapter 5: Market Structure and Pricing',
-      'Chapter 6: Factor Markets',
-      'Chapter 7: National Income and Economic Growth',
-      'Chapter 8: Money, Banking and Monetary Policy',
-      'Chapter 9: International Trade and Finance'
-    ]
-  },
-  generalBusiness: {
-    name: 'General Business',
-    icon: Briefcase,
-    chapters: [
-      'Chapter 1: Introduction to Business',
-      'Chapter 2: Business Organization and Management',
-      'Chapter 3: Marketing Management',
-      'Chapter 4: Financial Management',
-      'Chapter 5: Human Resource Management',
-      'Chapter 6: Production and Operations Management',
-      'Chapter 7: Business Ethics and Social Responsibility',
-      'Chapter 8: Entrepreneurship and Small Business'
-    ]
-  }
+const grade11PhysicsQuestions: { [chapter: string]: Question[] } = {
+  'Mechanics': [
+    {
+      id: '11phy_mech_e1',
+      question: 'What is the SI unit of force?',
+      options: ['Newton', 'Joule', 'Watt', 'Pascal'],
+      correct: 'Newton',
+      explanation: 'The Newton (N) is the SI unit of force.'
+    },
+  ],
+  'Waves': [
+    {
+      id: '11phy_wave_m1',
+      question: 'What is the relationship between frequency and wavelength?',
+      options: ['Inversely proportional', 'Directly proportional', 'No relation', 'Exponentially related'],
+      correct: 'Inversely proportional',
+      explanation: 'Frequency and wavelength are inversely proportional; as one increases, the other decreases.'
+    },
+  ],
+  'Electricity': [
+    {
+      id: '11phy_elec_h1',
+      question: 'What is Ohm\'s Law?',
+      options: ['V = IR', 'E = mc²', 'F = ma', 'PV = nRT'],
+      correct: 'V = IR',
+      explanation: 'Ohm\'s Law states that the voltage across a conductor is directly proportional to the current flowing through it, where V is voltage, I is current, and R is resistance.'
+    },
+  ],
+  'Optics': [
+    {
+      id: '11phy_opt_e1',
+      question: 'What is refraction?',
+      options: ['The bending of light', 'The reflection of light', 'The absorption of light', 'The emission of light'],
+      correct: 'The bending of light',
+      explanation: 'Refraction is the bending of light as it passes from one medium to another.'
+    },
+  ]
 };
 
-// Grade 12 Other subjects
-const grade12OtherSubjects: Subjects = {
-  english: {
-    name: 'English',
-    icon: BookA,
-    chapters: [
-      'Chapter 1: Reading Comprehension and Critical Analysis',
-      'Chapter 2: Grammar and Language Usage',
-      'Chapter 3: Writing Skills and Composition',
-      'Chapter 4: Literature and Literary Analysis',
-      'Chapter 5: Speaking and Listening Skills',
-      'Chapter 6: Research and Academic Writing'
-    ]
-  },
-  civics: {
-    name: 'Civics',
-    icon: Scale,
-    chapters: [
-      'Chapter 1: Principles of Democracy',
-      'Chapter 2: Constitutional Government',
-      'Chapter 3: Rule of Law and Human Rights',
-      'Chapter 4: Citizenship and Civic Participation',
-      'Chapter 5: Political Parties and Elections',
-      'Chapter 6: International Relations and Organizations'
-    ]
-  },
-  physicalEducation: {
-    name: 'Physical Education',
-    icon: Activity,
-    chapters: [
-      'Chapter 1: Health and Wellness',
-      'Chapter 2: Exercise Physiology',
-      'Chapter 3: Sports and Games',
-      'Chapter 4: Physical Fitness and Training',
-      'Chapter 5: Sports Psychology',
-      'Chapter 6: Sports Management and Organization'
-    ]
-  },
-  mathematics: {
-    name: 'Mathematics',
-    icon: Calculator,
-    chapters: [
-      'Unit 1: Sequence and Series',
-      'Unit 2: Introduction to Calculus',
-      'Unit 3: Statistics',
-      'Unit 4: Introduction to Linear Programming',
-      'Unit 5: Mathematical Application in Business'
-    ]
-  },
-  it: {
-    name: 'IT',
-    icon: Laptop,
-    chapters: [
-      'Chapter 1: Computer Systems and Architecture',
-      'Chapter 2: Operating Systems',
-      'Chapter 3: Programming Fundamentals',
-      'Chapter 4: Database Management Systems',
-      'Chapter 5: Computer Networks and Internet',
-      'Chapter 6: Web Development',
-      'Chapter 7: Computer Security',
-      'Chapter 8: Emerging Technologies'
-    ]
-  },
-  nationalLanguage: {
-    name: 'National Language',
-    icon: Languages,
-    chapters: [
-      'Chapter 1: Amharic Grammar and Syntax',
-      'Chapter 2: Classical Amharic Literature',
-      'Chapter 3: Modern Amharic Literature',
-      'Chapter 4: Poetry and Prose Analysis',
-      'Chapter 5: Creative Writing',
-      'Chapter 6: Cultural and Historical Context'
-    ]
-  }
+const grade11ChemistryQuestions: { [chapter: string]: Question[] } = {
+  'Organic Chemistry': [
+    {
+      id: '11chem_org_e1',
+      question: 'What is the main element in organic compounds?',
+      options: ['Carbon', 'Oxygen', 'Hydrogen', 'Nitrogen'],
+      correct: 'Carbon',
+      explanation: 'Carbon is the main element in organic compounds due to its ability to form stable bonds with itself and other elements.'
+    },
+  ],
+  'Physical Chemistry': [
+    {
+      id: '11chem_phy_m1',
+      question: 'What is the ideal gas law?',
+      options: ['PV = nRT', 'E = mc²', 'F = ma', 'V = IR'],
+      correct: 'PV = nRT',
+      explanation: 'The ideal gas law states the relationship between pressure, volume, number of moles, ideal gas constant, and temperature.'
+    },
+  ],
+  'Chemical Bonding': [
+    {
+      id: '11chem_bond_h1',
+      question: 'What is electronegativity?',
+      options: ['The ability of an atom to attract electrons', 'The size of an atom', 'The mass of an atom', 'The charge of an atom'],
+      correct: 'The ability of an atom to attract electrons',
+      explanation: 'Electronegativity is the measure of the ability of an atom to attract electrons in a chemical bond.'
+    },
+  ],
+  'Reactions': [
+    {
+      id: '11chem_reac_e1',
+      question: 'What is a chemical reaction?',
+      options: ['A process that involves rearrangement of atoms', 'A physical change', 'A change in state', 'A nuclear process'],
+      correct: 'A process that involves rearrangement of atoms',
+      explanation: 'A chemical reaction is a process that involves rearrangement of atoms and molecules to form new substances.'
+    },
+  ]
 };
 
-// Grade 11 Natural Science subjects
-const grade11NaturalScienceSubjects = {
-  biology: {
-    name: 'Biology',
-    icon: Dna,
-    chapters: [
-      'Cell Biology and Genetics',
-      'Human Biology and Health',
-      'Ecology and Environment',
-      'Plant Biology',
-      'Animal Biology',
-      'Evolution and Biodiversity'
-    ]
-  },
-  chemistry: {
-    name: 'Chemistry',
-    icon: FlaskConical,
-    chapters: [
-      'Atomic Structure and Periodicity',
-      'Chemical Bonding',
-      'States of Matter',
-      'Chemical Reactions',
-      'Organic Chemistry Basics',
-      'Acids, Bases and Salts'
-    ]
-  },
-  physics: {
-    name: 'Physics',
-    icon: Zap,
-    chapters: [
-      'Mechanics and Motion',
-      'Forces and Energy',
-      'Heat and Temperature',
-      'Waves and Sound',
-      'Light and Optics',
-      'Electricity and Magnetism'
-    ]
-  },
-  mathematics: {
-    name: 'Mathematics',
-    icon: Calculator,
-    chapters: [
-      'Advanced Algebra',
-      'Functions and Graphs',
-      'Trigonometry',
-      'Coordinate Geometry',
-      'Statistics and Probability',
-      'Calculus Introduction'
-    ]
-  }
+const grade11TechnicalDrawingQuestions: { [chapter: string]: Question[] } = {
+  'Engineering Drawing': [
+    {
+      id: '11td_eng_e1',
+      question: 'What is the purpose of engineering drawing?',
+      options: ['To communicate design ideas', 'To create art', 'To decorate buildings', 'To write reports'],
+      correct: 'To communicate design ideas',
+      explanation: 'Engineering drawing is used to accurately and clearly communicate design ideas and specifications.'
+    },
+  ],
+  '3D Modeling': [
+    {
+      id: '11td_3d_m1',
+      question: 'What is CAD?',
+      options: ['Computer-Aided Design', 'Chemical Analysis Device', 'Central Arithmetic Device', 'Creative Art Display'],
+      correct: 'Computer-Aided Design',
+      explanation: 'CAD stands for Computer-Aided Design, which is the use of computer software to create, modify, analyze, or optimize a design.'
+    },
+  ],
+  'Geometric Construction': [
+    {
+      id: '11td_geo_h1',
+      question: 'What is the purpose of geometric construction?',
+      options: ['To create accurate geometric shapes', 'To draw freehand sketches', 'To paint landscapes', 'To write mathematical equations'],
+      correct: 'To create accurate geometric shapes',
+      explanation: 'Geometric construction is used to create accurate geometric shapes using only a compass and straightedge.'
+    },
+  ],
+  'Technical Skills': [
+    {
+      id: '11td_tech_e1',
+      question: 'What is the importance of accuracy in technical drawing?',
+      options: ['Ensures proper fit and function', 'Makes the drawing look nice', 'Saves time', 'Is not important'],
+      correct: 'Ensures proper fit and function',
+      explanation: 'Accuracy in technical drawing is crucial to ensure that parts fit together correctly and function as intended.'
+    },
+  ]
 };
 
-// Grade 11 Social Science subjects
-const grade11SocialScienceSubjects = {
-  geography: {
-    name: 'Geography',
-    icon: MapPin,
-    chapters: [
-      'Physical Geography',
-      'Human Geography',
-      'Climate and Weather',
-      'Natural Resources',
-      'Environmental Issues',
-      'Regional Geography'
-    ]
-  },
-  history: {
-    name: 'History',
-    icon: Clock8,
-    chapters: [
-      'Ancient World History',
-      'Medieval History',
-      'Modern World History',
-      'African History',
-      'Ethiopian History',
-      'Contemporary Issues'
-    ]
-  },
-  economics: {
-    name: 'Economics',
-    icon: DollarSign,
-    chapters: [
-      'Introduction to Economics',
-      'Microeconomics',
-      'Macroeconomics',
-      'Market Systems',
-      'Economic Development',
-      'International Economics'
-    ]
-  },
-  general_business: {
-    name: 'General Business',
-    icon: Briefcase,
-    chapters: [
-      'Business Fundamentals',
-      'Marketing Principles',
-      'Accounting Basics',
-      'Management Concepts',
-      'Entrepreneurship',
-      'Business Ethics'
-    ]
-  }
-};
+const grade11AgricultureChapters = [
+  'Chapter 1: Introduction to Crop Production',
+  'Chapter 2: Field Crops Production and Management', 
+  'Chapter 3: Industrial Crops Production and Management',
+  'Chapter 4: Introduction to Farm Animals',
+  'Chapter 5: Animal Feeds and Feeding Practices',
+  'Chapter 6: Animal Genetics and Breeding Practices',
+  'Chapter 7: Farm Animals Housing',
+  'Chapter 8: Basic Animal Health and Disease Control',
+  'Chapter 9: Dairy Cattle Production and Management',
+  'Chapter 10: Introduction to Natural Resources',
+  'Chapter 11: Management of Natural Resources',
+  'Chapter 12: Concepts of Biodiversity',
+  'Chapter 13: Climate Change Adaptation and Mitigation',
+  'Chapter 14: Mechanized Farming',
+  'Chapter 15: Introduction to Human Nutrition',
+  'Chapter 16: Diversified Food Production and Consumption'
+];
 
-// Grade 11 Other subjects
-const grade11OtherSubjects = {
-  english: {
-    name: 'English',
-    icon: BookA,
-    chapters: [
-      'Grammar and Language Use',
-      'Reading Comprehension',
-      'Writing Skills',
-      'Literature Study',
-      'Speaking and Listening',
-      'Critical Analysis'
-    ]
-  },
-  civics: {
-    name: 'Civics & Ethical Education',
-    icon: Scale,
-    chapters: [
-      'Democratic Principles',
-      'Constitutional Government',
-      'Human Rights',
-      'Civic Responsibility',
-      'Ethical Values',
-      'Social Justice'
-    ]
-  },
-  amharic: {
-    name: 'Amharic',
-    icon: Languages,
-    chapters: [
-      'Amharic Grammar',
-      'Literature Analysis',
-      'Poetry and Prose',
-      'Creative Writing',
-      'Cultural Context',
-      'Language Skills'
-    ]
-  },
-  ict: {
-    name: 'Information Technology',
-    icon: Laptop,
-    chapters: [
-      'Computer Fundamentals',
-      'Software Applications',
-      'Internet and Networks',
-      'Programming Basics',
-      'Database Concepts',
-      'Digital Literacy'
-    ]
-  },
-  physical_education: {
-    name: 'Physical Education',
-    icon: Activity,
-    chapters: [
-      'Health and Fitness',
-      'Sports and Games',
-      'Exercise Science',
-      'Nutrition',
-      'Safety and First Aid',
-      'Team Sports'
-    ]
-  }
-};
-
-export const getSubjectsForGrade = (grade: number) => {
-  switch (grade) {
-    case 12:
-      return grade12NaturalScienceSubjects;
-    case 11:
-      return grade11NaturalScienceSubjects;
-    default:
-      return {};
-  }
-};
-
-export const getSocialScienceSubjectsForGrade = (grade: number) => {
-  if (grade === 12) {
-    return grade12SocialScienceSubjects;
-  } else if (grade === 11) {
-    return grade11SocialScienceSubjects;
-  }
-  return {};
-};
-
-export const getOtherSubjectsForGrade = (grade: number) => {
-  if (grade === 12) {
-    return grade12OtherSubjects;
-  } else if (grade === 11) {
-    return grade11OtherSubjects;
-  }
-  return {};
-};
-
-// Sample questions generator function
-export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
-  // This is a placeholder function that generates sample questions
-  // In a real implementation, this would fetch from a database or static files
-  const sampleQuestions: Question[] = [];
+export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 15) => {
+  console.log('Getting questions for:', { subject, chapter, difficulty, count });
   
-  for (let i = 1; i <= count; i++) {
-    sampleQuestions.push({
-      id: `${subject}-${chapter}-${difficulty}-${i}`,
-      question: `Sample ${difficulty} question ${i} for ${subject} - ${chapter}`,
+  // Handle Grade 11 Agriculture questions
+  if (subject.toLowerCase() === 'agriculture' && chapter.includes('Chapter')) {
+    console.log('Processing Grade 11 Agriculture for chapter:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade11AgricultureQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 11 Agriculture questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    // If no specific questions found, return sample questions for all agriculture chapters
+    const sampleQuestions: Question[] = grade11AgricultureChapters.map((chapterName, index) => ({
+      id: `agr11_${index + 1}`,
+      question: `What is the main focus of ${chapterName.replace('Chapter ' + (index + 1) + ': ', '')}?`,
       options: [
-        'Option A - Correct answer',
-        'Option B - Incorrect answer',
-        'Option C - Incorrect answer',
-        'Option D - Incorrect answer'
+        `Understanding ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}`,
+        'General farming',
+        'Animal care only',
+        'Soil testing'
       ],
-      correct: 'Option A - Correct answer',
-      explanation: `This is the explanation for question ${i} in ${subject} - ${chapter}`,
-      difficulty: difficulty,
-      chapter: chapter,
-      subject: subject
-    });
+      correct: `Understanding ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}`,
+      explanation: `This chapter focuses on the principles and practices of ${chapterName.replace('Chapter ' + (index + 1) + ': ', '').toLowerCase()}.`
+    }));
+    
+    return sampleQuestions.slice(0, count);
+  }
+
+  // Handle Grade 12 Biology questions
+  if (subject.toLowerCase() === 'biology' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Biology for chapter:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12BiologyQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Biology questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    // If no questions found, log the available chapters
+    console.log('Available Grade 12 Biology chapters:', Object.keys(grade12BiologyQuestions));
+    console.log('Requested chapter:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Chemistry questions
+  if (subject.toLowerCase() === 'chemistry' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Chemistry for chapter:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12ChemistryQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Chemistry questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    // If no questions found, log the available units
+    console.log('Available Grade 12 Chemistry units:', Object.keys(grade12ChemistryQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 English questions
+  if (subject.toLowerCase() === 'english' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 English for unit:', chapter);
+    
+    const questions = grade12EnglishQuestions[chapter];
+    if (questions) {
+      const filteredQuestions = questions.filter(q => 
+        q.difficulty.toLowerCase() === difficulty.toLowerCase()
+      );
+      console.log('Found Grade 12 English questions:', filteredQuestions.length);
+      
+      // Convert English questions to standard Question format
+      const convertedQuestions = filteredQuestions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      // Shuffle and return the requested count
+      const shuffled = convertedQuestions.sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+    
+    console.log('Available Grade 12 English units:', Object.keys(grade12EnglishQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Geography questions
+  if (subject.toLowerCase() === 'geography' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Geography for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12GeographyQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Geography questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    console.log('Available Grade 12 Geography units:', Object.keys(grade12GeographyQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 History questions
+  if (subject.toLowerCase() === 'history' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 History for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'Easy' | 'Medium' | 'Hard';
+    const questions = getGrade12HistoryQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 History questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    console.log('Available Grade 12 History units:', Object.keys(grade12HistoryQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Civic Education questions
+  if (subject.toLowerCase() === 'civic education' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Civic Education for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12CivicsQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Civic Education questions:', questions.length);
+    
+    if (questions.length > 0) {
+      return questions;
+    }
+    
+    console.log('Available Grade 12 Civic Education units:', Object.keys(grade12CivicsQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  // Handle Grade 12 Information Technology questions
+  if (subject.toLowerCase() === 'information technology' && chapter.includes('Unit')) {
+    console.log('Processing Grade 12 Information Technology for unit:', chapter);
+    
+    const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+    const questions = getGrade12ITQuestions(chapter, difficultyLevel, count);
+    console.log('Found Grade 12 Information Technology questions:', questions.length);
+    
+    if (questions.length > 0) {
+      // Convert to standard Question format
+      const convertedQuestions = questions.map(q => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation
+      }));
+      
+      return convertedQuestions;
+    }
+    
+    console.log('Available Grade 12 Information Technology units:', Object.keys(grade12ITQuestions));
+    console.log('Requested unit:', chapter);
+    return [];
+  }
+
+  let questions: Question[] = [];
+
+  // Handle Grade 11 questions
+  if (subject.toLowerCase() === 'biology' && !chapter.includes('Unit')) {
+    if (grade11BiologyQuestions[chapter]) {
+      questions = grade11BiologyQuestions[chapter];
+    }
+  } else if (subject.toLowerCase() === 'physics') {
+    if (grade11PhysicsQuestions[chapter]) {
+      questions = grade11PhysicsQuestions[chapter];
+    }
+  } else if (subject.toLowerCase() === 'chemistry' && !chapter.includes('Unit')) {
+    if (grade11ChemistryQuestions[chapter]) {
+      questions = grade11ChemistryQuestions[chapter];
+    }
+  } else if (subject.toLowerCase() === 'technical drawing') {
+    if (grade11TechnicalDrawingQuestions[chapter]) {
+      questions = grade11TechnicalDrawingQuestions[chapter];
+    }
   }
   
-  return sampleQuestions;
-};
-
-// Sample questions (can be expanded)
-const sampleQuestions = {
-  biology: {
-    chapter1: [
-      { question: 'What is the basic unit of life?', answer: 'Cell' },
-      { question: 'What is the function of mitochondria?', answer: 'Energy production' }
-    ]
-  },
-  physics: {
-    chapter1: [
-      { question: 'What is the unit of force?', answer: 'Newton' },
-      { question: 'Define inertia.', answer: 'Resistance to change in motion' }
-    ]
+  // Add some fallback questions for testing
+  if (subject.toLowerCase() === 'physics') {
+    switch (chapter) {
+      case 'Chapter 1: Mechanics':
+        if (difficulty === 'Easy') {
+          questions.push(
+            {
+              id: 'phy_mech_e1',
+              question: 'What is the SI unit of force?',
+              options: ['Newton', 'Joule', 'Pascal', 'Watt'],
+              correct: 'Newton',
+              explanation: 'The Newton (N) is the SI unit of force, defined as kg⋅m/s².'
+            },
+            {
+              id: 'phy_mech_e2',
+              question: 'What is acceleration?',
+              options: ['Rate of change of velocity', 'Rate of change of position', 'Force per unit mass', 'Both A and C'],
+              correct: 'Both A and C',
+              explanation: 'Acceleration is both the rate of change of velocity and force per unit mass (from Newton\'s second law).'
+            }
+          );
+        }
+        break;
+    }
+  } else if (subject.toLowerCase() === 'chemistry') {
+    switch (chapter) {
+      case 'Chapter 1: Atomic Structure and Periodic Properties':
+        if (difficulty === 'Easy') {
+          questions.push(
+            {
+              id: 'chem_atom_e1',
+              question: 'What is an atom?',
+              options: ['Smallest unit of matter', 'A molecule', 'An ion', 'A compound'],
+              correct: 'Smallest unit of matter',
+              explanation: 'An atom is the smallest unit of matter that retains the properties of an element.'
+            }
+          );
+        }
+        break;
+    }
   }
-};
 
-export default sampleQuestions;
+  console.log('Final generated questions:', questions.length);
+  
+  // Shuffle and return the requested count
+  const shuffled = questions.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};

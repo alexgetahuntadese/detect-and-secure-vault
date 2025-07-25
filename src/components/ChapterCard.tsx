@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, BookOpen, Clock, Target } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface ChapterCardProps {
   chapter: string;
@@ -14,18 +13,19 @@ interface ChapterCardProps {
 }
 
 const ChapterCard = ({ chapter, subject, subjectIcon: Icon, onSelectQuiz, grade }: ChapterCardProps) => {
-  const navigate = useNavigate();
-
-  const handleQuizStart = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
-    const encodedChapter = encodeURIComponent(chapter);
-    
-    if (grade === 11) {
-      // Use Grade 11 specific routes
-      navigate(`/grade/11/subject/${subject.toLowerCase().replace(/\s+/g, '_')}/chapter/${encodedChapter}/difficulty/${difficulty.toLowerCase()}/quiz`);
-    } else {
-      // Use regular Grade 12 routes
-      navigate(`/grade/${grade}/subject/${subject.toLowerCase().replace(/\s+/g, '_')}/chapter/${encodedChapter}/difficulty/${difficulty.toLowerCase()}/quiz`);
-    }
+  const createQuiz = (difficulty: 'Easy' | 'Medium' | 'Hard') => {
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      title: `${subject} - ${chapter} (${difficulty})`,
+      subject: subject.toLowerCase().replace(/\s+/g, '_'),
+      difficulty: difficulty,
+      duration: difficulty === 'Easy' ? 30 : difficulty === 'Medium' ? 45 : 60,
+      questions: difficulty === 'Easy' ? 15 : difficulty === 'Medium' ? 20 : 25,
+      completed: false,
+      score: null,
+      grade: grade,
+      chapters: [chapter]
+    };
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -73,7 +73,7 @@ const ChapterCard = ({ chapter, subject, subjectIcon: Icon, onSelectQuiz, grade 
                 key={difficulty}
                 size="sm"
                 className={`text-xs text-white border-0 ${getDifficultyColor(difficulty)} transition-all duration-200`}
-                onClick={() => handleQuizStart(difficulty)}
+                onClick={() => onSelectQuiz(createQuiz(difficulty))}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
