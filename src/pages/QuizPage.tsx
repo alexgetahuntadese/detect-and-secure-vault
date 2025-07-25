@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
@@ -11,6 +10,11 @@ import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 import { grade12ITQuestions } from '@/data/grade12ITQuestions';
 import { grade12AgricultureQuestions } from '@/data/grade12AgricultureQuestions';
 import { getGrade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
+import { getGrade11MathQuestions } from '@/data/grade11Mathematics';
+import { getGrade11BiologyQuestions } from '@/data/grade11Biology';
+import { getGrade11PhysicsQuestions } from '@/data/grade11Physics';
+import { getGrade11ChemistryQuestions } from '@/data/grade11Chemistry';
+import { getGrade11AgricultureQuestions } from '@/data/grade11AgricultureQuestions';
 import QuestionCard from '@/components/QuestionCard';
 import Results from '@/components/Results';
 import { Button } from "@/components/ui/button";
@@ -25,12 +29,74 @@ interface Question {
   explanation: string;
 }
 
-const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
+const getQuestionsForSubject = (subject: string, chapter: string, difficulty: string, grade: string, count: number = 10): Question[] => {
   let allQuestions: any[] = [];
   
-  console.log('Getting questions for:', { subject, chapter, difficulty });
+  console.log('Getting questions for:', { subject, chapter, difficulty, grade });
   
   try {
+    // Handle Grade 11 subjects
+    if (grade === '11') {
+      const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
+      
+      switch (subject) {
+        case 'Mathematics':
+          const grade11MathQuestions = getGrade11MathQuestions(chapter, difficultyLevel, count);
+          return grade11MathQuestions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation
+          }));
+          
+        case 'Biology':
+          const grade11BioQuestions = getGrade11BiologyQuestions(chapter, difficultyLevel, count);
+          return grade11BioQuestions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation
+          }));
+          
+        case 'Physics':
+          const grade11PhyQuestions = getGrade11PhysicsQuestions(chapter, difficultyLevel, count);
+          return grade11PhyQuestions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation
+          }));
+          
+        case 'Chemistry':
+          const grade11ChemQuestions = getGrade11ChemistryQuestions(chapter, difficultyLevel, count);
+          return grade11ChemQuestions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation
+          }));
+          
+        case 'Agriculture':
+          const grade11AgriQuestions = getGrade11AgricultureQuestions(chapter, difficultyLevel, count);
+          return grade11AgriQuestions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation
+          }));
+          
+        default:
+          console.warn('Grade 11 subject not implemented:', subject);
+          return [];
+      }
+    }
+    
+    // Handle Grade 12 subjects (existing logic)
     switch (subject) {
       case 'Mathematics':
         const mathData = grade12Mathematics[chapter];
@@ -143,14 +209,14 @@ const QuizPage = () => {
   const initializeQuestions = () => {
     console.log('Initializing questions with params:', { subject, chapterId, difficulty, grade });
     
-    if (!subject || !chapterId || !difficulty) {
+    if (!subject || !chapterId || !difficulty || !grade) {
       setError('Missing required quiz parameters');
       setIsLoading(false);
       return;
     }
     
     try {
-      const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, 10);
+      const fetchedQuestions = getQuestionsForSubject(subject, chapterId, difficulty, grade, 10);
       
       if (fetchedQuestions.length > 0) {
         console.log('Questions loaded successfully:', fetchedQuestions.length);
@@ -162,8 +228,8 @@ const QuizPage = () => {
         setElapsedTime(0);
         setError(null);
       } else {
-        console.error('No questions found for:', { subject, chapter: chapterId, difficulty });
-        setError(`No questions available for ${subject} - ${chapterId} (${difficulty} level)`);
+        console.error('No questions found for:', { subject, chapter: chapterId, difficulty, grade });
+        setError(`No questions available for Grade ${grade} ${subject} - ${chapterId} (${difficulty} level)`);
         setQuestions([]);
       }
     } catch (err) {
@@ -410,7 +476,7 @@ const QuizPage = () => {
             Back
           </Button>
           <h2 className="text-2xl font-semibold text-white">
-            {subject} - {chapterId} ({difficulty})
+            Grade {grade} {subject} - {chapterId} ({difficulty})
           </h2>
         </div>
       </div>
