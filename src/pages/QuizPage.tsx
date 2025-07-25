@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
@@ -281,7 +280,7 @@ const QuizPage = () => {
           <p className="text-red-400 text-lg mb-4">{error}</p>
           <div className="space-x-4">
             <Button 
-              onClick={initializeQuiz}
+              onClick={initializeQuestions}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Try Again
