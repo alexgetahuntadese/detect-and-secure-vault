@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { grade12Mathematics } from '@/data/grade12Mathematics';
@@ -52,6 +53,7 @@ const getQuestionsForSubject = (subject: string, chapter: string, difficulty: st
         allQuestions = Array.isArray(engData) ? engData : [];
         break;
       case 'Civics':
+      case 'Civic Education':
         const civicsData = grade12CivicsQuestions[chapter];
         allQuestions = Array.isArray(civicsData) ? civicsData : [];
         break;
