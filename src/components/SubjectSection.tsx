@@ -1,6 +1,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import ChapterCard from './ChapterCard';
+import { useNavigate } from 'react-router-dom';
 
 interface SubjectSectionProps {
   title: string;
@@ -15,6 +16,18 @@ interface SubjectSectionProps {
 }
 
 const SubjectSection = ({ title, subjects, badgeColor, onSelectQuiz, grade }: SubjectSectionProps) => {
+  const navigate = useNavigate();
+
+  const handleSubjectClick = (subject: any) => {
+    if (grade === 11) {
+      // Use Grade 11 specific route
+      navigate(`/grade/11/subject/${subject.name.toLowerCase().replace(/\s+/g, '_')}/chapters`);
+    } else {
+      // Use regular Grade 12 route  
+      navigate(`/grade/${grade}/subject/${subject.name.toLowerCase().replace(/\s+/g, '_')}/chapters`);
+    }
+  };
+
   return (
     <div className="mb-8">
       <div className="flex items-center mb-4">
@@ -26,7 +39,10 @@ const SubjectSection = ({ title, subjects, badgeColor, onSelectQuiz, grade }: Su
       
       {subjects.map((subject, subjectIndex) => (
         <div key={subjectIndex} className="mb-6">
-          <div className="flex items-center mb-3">
+          <div 
+            className="flex items-center mb-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all duration-200"
+            onClick={() => handleSubjectClick(subject)}
+          >
             <div className="p-2 rounded-lg bg-blue-500 mr-3">
               <subject.icon className="h-5 w-5 text-white" />
             </div>

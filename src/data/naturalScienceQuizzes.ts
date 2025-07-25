@@ -367,11 +367,51 @@ import { getGrade11AgricultureQuestions } from './grade11AgricultureQuestions';
 export const getQuestionsForQuiz = (subject: string, chapter: string, difficulty: string, count: number = 10): Question[] => {
   const difficultyLevel = difficulty.toLowerCase() as 'easy' | 'medium' | 'hard';
   
-  switch (subject.toLowerCase()) {
+  // Normalize subject name for comparison
+  const normalizedSubject = subject.toLowerCase().replace(/\s+|_/g, '');
+  
+  switch (normalizedSubject) {
     case 'agriculture':
       return getGrade11AgricultureQuestions(chapter, difficultyLevel, count);
+    case 'physics':
+    case 'chemistry':
+    case 'biology':
+    case 'geography':
+    case 'history':
+    case 'civiceducation':
+    case 'civics':
+    case 'economics':
+    case 'informationtechnology':
+    case 'it':
+    case 'english':
+    case 'aptitude':
+      // For now, return sample questions for all other subjects
+      return generateSampleQuestions(subject, chapter, difficultyLevel, count);
     default:
       console.warn(`No questions available for subject: ${subject}`);
       return [];
   }
+};
+
+// Helper function to generate sample questions for subjects without dedicated question files
+const generateSampleQuestions = (subject: string, chapter: string, difficulty: string, count: number): Question[] => {
+  const questions: Question[] = [];
+  
+  for (let i = 1; i <= count; i++) {
+    questions.push({
+      id: `${subject}_${chapter}_${difficulty}_${i}`,
+      question: `Sample ${difficulty} question ${i} for ${subject} - ${chapter}. This is a placeholder question that will be replaced with actual curriculum-aligned content.`,
+      options: [
+        `Option A for question ${i}`,
+        `Option B for question ${i}`,
+        `Option C for question ${i}`,
+        `Option D for question ${i}`
+      ],
+      correct: `Option A for question ${i}`,
+      explanation: `This is a sample explanation for question ${i} in ${subject} - ${chapter}. The correct answer demonstrates the key concepts from this chapter.`,
+      difficulty: difficulty.charAt(0).toUpperCase() + difficulty.slice(1) as 'Easy' | 'Medium' | 'Hard'
+    });
+  }
+  
+  return questions;
 };
