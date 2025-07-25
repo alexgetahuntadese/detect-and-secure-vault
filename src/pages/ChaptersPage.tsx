@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 // import { Progress } from '@/components/ui/progress';
@@ -489,31 +489,24 @@ const ChaptersPage = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Advanced': return 'bg-red-500 text-white';
-      case 'Intermediate': return 'bg-yellow-500 text-black';
-      case 'Beginner': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
+      case 'Easy': return 'bg-green-600 hover:bg-green-700';
+      case 'Medium': return 'bg-yellow-600 hover:bg-yellow-700';
+      case 'Hard': return 'bg-red-600 hover:bg-red-700';
+      default: return 'bg-gray-600 hover:bg-gray-700';
     }
   };
 
-  const getProgressColor = (progress: number) => {
-    if (progress >= 80) return 'text-green-500';
-    if (progress >= 60) return 'text-yellow-500';
-    if (progress >= 40) return 'text-orange-500';
-    return 'text-red-500';
-  };
-
-  const handleStartQuiz = (chapterId: number, chapterTitle: string, difficulty: 'Easy' | 'Medium' | 'Hard') => {
+  const handleStartQuiz = (chapterTitle: string, difficulty: 'Easy' | 'Medium' | 'Hard') => {
     const chapterSlug = encodeURIComponent(chapterTitle);
-    const difficultySlug = encodeURIComponent(difficulty);
-    navigate(`/grade/${grade}/subject/${encodeURIComponent(decodedSubject)}/chapter/${chapterSlug}/difficulty/${difficultySlug}/quiz`);
+    navigate(`/grade/${grade}/subject/${encodeURIComponent(decodedSubject)}/chapter/${chapterSlug}/difficulty/${difficulty.toLowerCase()}/quiz`);
   };
 
   const overallProgress = Math.round(chapters.reduce((acc, chapter) => acc + chapter.progress, 0) / chapters.length);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="flex items-center mb-8">
           <Button 
             variant="ghost" 
@@ -525,6 +518,7 @@ const ChaptersPage = () => {
           </Button>
         </div>
 
+        {/* Title Section */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-white mb-4">
             {decodedSubject} Chapters
@@ -536,7 +530,7 @@ const ChaptersPage = () => {
           <div className="max-w-md mx-auto bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white font-medium">Overall Progress</span>
-              <span className={`font-bold ${getProgressColor(overallProgress)}`}>
+              <span className="font-bold text-blue-300">
                 {overallProgress}%
               </span>
             </div>
@@ -549,36 +543,34 @@ const ChaptersPage = () => {
           </div>
         </div>
 
+        {/* Chapters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {chapters.map((chapter) => (
             <Card 
               key={chapter.id}
-              className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 transition-all duration-300"
+              className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/15 transition-all duration-300 group"
             >
-              <CardHeader>
-                <div className="flex items-start justify-between">
+              <CardHeader className="pb-3">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="p-2 rounded-lg bg-blue-500">
+                    <BookOpen className="h-5 w-5 text-white" />
+                  </div>
                   <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <CardTitle className="text-white text-lg mr-3">
-                        Chapter {chapter.id}
-                      </CardTitle>
-                      {chapter.isCompleted && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                    <CardTitle className="text-white text-xl mb-2">
+                    <CardTitle className="text-lg font-semibold text-white">
                       {chapter.title}
                     </CardTitle>
-                    <Badge className={getDifficultyColor(chapter.difficulty)}>
-                      {chapter.difficulty}
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs mt-1">
+                      Chapter {chapter.id}
                     </Badge>
                   </div>
                 </div>
-                <CardDescription className="text-blue-200 mt-2">
+                <p className="text-blue-200 text-sm leading-relaxed">
                   {chapter.description}
-                </CardDescription>
+                </p>
               </CardHeader>
+              
               <CardContent className="space-y-4">
+                {/* Chapter Stats */}
                 <div className="grid grid-cols-2 gap-4 text-sm text-gray-300">
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4" />
@@ -592,7 +584,10 @@ const ChaptersPage = () => {
 
                 {/* Difficulty Breakdown */}
                 <div className="bg-white/5 rounded-lg p-3 space-y-2">
-                  <h4 className="text-white font-medium text-sm">Questions by Difficulty</h4>
+                  <h4 className="text-white font-medium text-sm flex items-center">
+                    <Target className="mr-1 h-3 w-3" />
+                    Questions by Difficulty
+                  </h4>
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div className="text-center">
                       <div className="text-green-400 font-bold">{chapter.difficultyBreakdown.easy}</div>
@@ -609,11 +604,12 @@ const ChaptersPage = () => {
                   </div>
                 </div>
 
+                {/* Progress Bar */}
                 {chapter.progress > 0 && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-300">Progress</span>
-                      <span className={`font-medium ${getProgressColor(chapter.progress)}`}>
+                      <span className="font-medium text-blue-300">
                         {chapter.progress}%
                       </span>
                     </div>
@@ -628,32 +624,28 @@ const ChaptersPage = () => {
                 
                 {/* Difficulty Selection Buttons */}
                 <div className="space-y-2">
-                  <h4 className="text-white font-medium text-sm">Choose Difficulty</h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button 
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => handleStartQuiz(chapter.id, chapter.title, 'Easy')}
-                      disabled={chapter.difficultyBreakdown.easy === 0}
-                    >
-                      Easy
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
-                      onClick={() => handleStartQuiz(chapter.id, chapter.title, 'Medium')}
-                      disabled={chapter.difficultyBreakdown.medium === 0}
-                    >
-                      Medium
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white"
-                      onClick={() => handleStartQuiz(chapter.id, chapter.title, 'Hard')}
-                      disabled={chapter.difficultyBreakdown.hard === 0}
-                    >
-                      Hard
-                    </Button>
+                  <h4 className="text-white font-medium text-sm">Choose Difficulty Level:</h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {(['Easy', 'Medium', 'Hard'] as const).map((difficulty) => (
+                      <Button
+                        key={difficulty}
+                        size="sm"
+                        className={`text-xs text-white border-0 ${getDifficultyColor(difficulty)} transition-all duration-200`}
+                        onClick={() => handleStartQuiz(chapter.title, difficulty)}
+                        disabled={chapter.difficultyBreakdown[difficulty.toLowerCase() as keyof typeof chapter.difficultyBreakdown] === 0}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center">
+                            <Play className="mr-1 h-3 w-3" />
+                            {difficulty}
+                          </div>
+                          <div className="flex items-center text-xs opacity-75">
+                            <Clock className="mr-1 h-2 w-2" />
+                            {difficulty === 'Easy' ? '30m' : difficulty === 'Medium' ? '45m' : '60m'}
+                          </div>
+                        </div>
+                      </Button>
+                    ))}
                   </div>
                 </div>
               </CardContent>
