@@ -1,4 +1,3 @@
-
 export interface Grade11Subject {
   id: string;
   name: string;
@@ -63,13 +62,12 @@ export const grade11Subjects: Grade11Subject[] = [
     icon: 'Leaf',
     description: 'Study of living organisms, cells, genetics, and ecosystems',
     chapters: [
-      'Chapter 1: Cell Biology',
-      'Chapter 2: Genetics',
-      'Chapter 3: Evolution',
-      'Chapter 4: Ecology',
-      'Chapter 5: Human Biology',
-      'Chapter 6: Plant Biology',
-      'Chapter 7: Animal Biology'
+      'Unit 1: Biology and Technology',
+      'Unit 2: Characteristics of animals',
+      'Unit 3: Enzymes',
+      'Unit 4: Genetics',
+      'Unit 5: The human body systems',
+      'Unit 6: Population and natural resources'
     ],
     category: 'Natural Sciences'
   },

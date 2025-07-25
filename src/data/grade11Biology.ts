@@ -205,6 +205,9 @@ export const grade11Biology: { [chapter: string]: Grade11BiologyQuestion[] } = {
   ]
 };
 
+// Export chapter names for easy access
+export const grade11BiologyChapters = Object.keys(grade11Biology);
+
 export const getGrade11BiologyQuestions = (chapter: string, difficulty: 'easy' | 'medium' | 'hard', count: number = 10): Grade11BiologyQuestion[] => {
   const chapterQuestions = grade11Biology[chapter] || [];
   const difficultyMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
@@ -213,4 +216,8 @@ export const getGrade11BiologyQuestions = (chapter: string, difficulty: 'easy' |
   const filteredQuestions = chapterQuestions.filter(q => q.difficulty === targetDifficulty);
   const shuffled = filteredQuestions.sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
+};
+
+export const getAllGrade11BiologyQuestions = (): Grade11BiologyQuestion[] => {
+  return Object.values(grade11Biology).flat();
 };
