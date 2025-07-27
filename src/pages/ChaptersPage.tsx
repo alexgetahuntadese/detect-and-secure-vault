@@ -14,7 +14,6 @@ import { grade12GeographyQuestions } from '@/data/grade12GeographyQuestions';
 import { grade12HistoryQuestions } from '@/data/grade12HistoryQuestions';
 import { grade12CivicsQuestions } from '@/data/grade12CivicsQuestions';
 import { grade12ITQuestions } from '@/data/grade12ITQuestions';
-import { grade11Biology } from '@/data/grade11Biology';
 
 const ChaptersPage = () => {
   const navigate = useNavigate();
@@ -23,32 +22,6 @@ const ChaptersPage = () => {
 
   // Get chapters based on subject and grade
   const getChaptersForSubject = () => {
-    // Handle Grade 11 Biology
-    if (decodedSubject === 'Biology' && grade === '11') {
-      return Object.keys(grade11Biology).map((chapterName, index) => {
-        const questions = grade11Biology[chapterName];
-        const easyQuestions = questions.filter(q => q.difficulty === 'Easy').length;
-        const mediumQuestions = questions.filter(q => q.difficulty === 'Medium').length;
-        const hardQuestions = questions.filter(q => q.difficulty === 'Hard').length;
-        
-        return {
-          id: index + 1,
-          title: chapterName,
-          description: getGrade11BiologyChapterDescription(chapterName),
-          duration: getDurationEstimate(questions.length),
-          difficulty: getDominantDifficulty(easyQuestions, mediumQuestions, hardQuestions),
-          progress: Math.floor(Math.random() * 101),
-          isCompleted: Math.random() > 0.7,
-          questionsCount: questions.length,
-          difficultyBreakdown: {
-            easy: easyQuestions,
-            medium: mediumQuestions,
-            hard: hardQuestions
-          }
-        };
-      });
-    }
-
     if (decodedSubject === 'Mathematics' && grade === '12') {
       return Object.keys(grade12Mathematics).map((chapterName, index) => {
         const questions = grade12Mathematics[chapterName];
@@ -368,18 +341,6 @@ const ChaptersPage = () => {
         difficultyBreakdown: { easy: 10, medium: 8, hard: 2 }
       },
     ];
-  };
-
-  const getGrade11BiologyChapterDescription = (chapterName: string) => {
-    const descriptions: { [key: string]: string } = {
-      "Unit 1: Biology and Technology": "Explore the practical applications of biological principles in technology, biotechnology, and modern medicine",
-      "Unit 2: Characteristics of animals": "Study animal classification, body systems, adaptation, and evolutionary relationships in the animal kingdom",
-      "Unit 3: Enzymes": "Learn about enzyme structure, function, factors affecting enzyme activity, and their role in biological processes",
-      "Unit 4: Genetics": "Understand inheritance patterns, DNA structure, genetic variation, and the principles of heredity",
-      "Unit 5: The human body systems": "Examine the structure and function of major organ systems including circulatory, respiratory, and nervous systems",
-      "Unit 6: Population and natural resources": "Investigate population dynamics, environmental factors, and sustainable resource management"
-    };
-    return descriptions[chapterName] || "Comprehensive study of biological concepts and life processes";
   };
 
   const getChapterDescription = (chapterName: string) => {
